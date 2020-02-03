@@ -7,6 +7,7 @@ import se.nackademin.bankomatdb.atm.model.DTOLoan;
 import java.util.List;
 
 // Tanken är att bankomaten hämtar ett kundobjekt vid inloggning och återanvänder det
+// TODO Ange eventuella exceptions
 public interface ATMRepository {
     List<DTOAccount> getCustomerAccounts(DTOCustomer customer);
 
@@ -17,5 +18,5 @@ public interface ATMRepository {
 
     // Returnerar true oom uttaget lyckas
     // Kontanterna lär lagras som flyttal i databasen, men uttag är alltid i hela kronor
-    boolean withdraw(DTOCustomer customer, int amount);
+    boolean withdraw(DTOAccount account, int amount);
 }
