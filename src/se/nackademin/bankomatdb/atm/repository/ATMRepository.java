@@ -3,6 +3,7 @@ package se.nackademin.bankomatdb.atm.repository;
 import se.nackademin.bankomatdb.atm.model.DTOAccount;
 import se.nackademin.bankomatdb.atm.model.DTOCustomer;
 import se.nackademin.bankomatdb.atm.model.DTOLoan;
+import se.nackademin.bankomatdb.atm.model.DTOTransaction;
 
 import java.util.List;
 
@@ -12,6 +13,8 @@ public interface ATMRepository {
     List<DTOAccount> getCustomerAccounts(DTOCustomer customer);
 
     List<DTOLoan> getCustomerLoans(DTOCustomer customer);
+
+    List<DTOTransaction> getTransactionHistory(DTOAccount account);
 
     // Kan behöva ses över senare. Vad används för identifikation? Är strängar det rätta valet?
     DTOCustomer login(String identification, String pin);

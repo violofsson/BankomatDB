@@ -3,6 +3,7 @@ package se.nackademin.bankomatdb.atm.controller;
 import se.nackademin.bankomatdb.atm.model.DTOAccount;
 import se.nackademin.bankomatdb.atm.model.DTOCustomer;
 import se.nackademin.bankomatdb.atm.model.DTOLoan;
+import se.nackademin.bankomatdb.atm.model.DTOTransaction;
 import se.nackademin.bankomatdb.atm.repository.ATMRepository;
 
 import java.util.List;
@@ -20,6 +21,10 @@ public class Controller {
     // Vi lär behöva ändra returtyperna
     List<DTOAccount> getCustomerAccounts() {
         return repository.getCustomerAccounts(getCurrentCustomer());
+    }
+
+    List<DTOTransaction> getTransactionHistory(DTOAccount account) {
+        return repository.getTransactionHistory(account);
     }
 
     List<DTOLoan> getCustomerLoans() {
