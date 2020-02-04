@@ -35,12 +35,14 @@ public class Controller {
     }
 
     void deposit(VMAccount account, double amount) {
-        // Exception om negativ?
+        if (amount < 0)
+            throw new IllegalArgumentException("Attempting to deposit a negative amount");
         repository.transact(new DTOAccount(), Math.abs(amount));
     }
 
     void withdraw(VMAccount account, double amount) {
-        // Exception om negaativ?
+        if (amount < 0)
+            throw new IllegalArgumentException("Attempting to withdraw a negative amout");
         repository.transact(new DTOAccount(), -1 * Math.abs(amount));
     }
 
