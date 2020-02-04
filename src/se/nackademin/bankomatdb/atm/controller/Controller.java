@@ -9,16 +9,8 @@ import se.nackademin.bankomatdb.atm.repository.ATMRepository;
 import java.util.Collection;
 
 public class Controller {
-    // Eftersom vi aldrig uppdaterar dem kan vi hämta konton och lån vid inloggning
-    // och lagra dem istället för att hämta på nytt varje gång.
-    // Transaktioner måste dock hämtas om, eftersom vi kan uppdatera dem
-    // genom att ta ut pengar.
-    // TODO Men saldouppdatering då???
-    // Riktiga bankomater "loggar ut" efter en transaktion - ska vi göra detsamma?
     ATMRepository repository;
     DTOCustomer currentCustomer;
-    Collection<DTOAccount> customerAccounts;
-    Collection<DTOLoan> customerLoans;
 
     public Controller() {
         // Intialisera repository
@@ -32,7 +24,7 @@ public class Controller {
     // TODO Behandla rådatan för konton/lån och översätt från repository till vy
     // Vi lär behöva ändra returtyperna
     Collection<DTOAccount> getCustomerAccounts() {
-        return customerAccounts;
+        return repository.getCustomerAccounts(currentCustomer);
     }
 
     Collection<DTOTransaction> getTransactionHistory(DTOAccount account) {
@@ -40,28 +32,22 @@ public class Controller {
     }
 
     Collection<DTOLoan> getCustomerLoans() {
-        return customerLoans;
+        return repository.getCustomerLoans(currentCustomer);
     }
 
     public boolean login(String id, String pin) {
         // TODO Kasta exception om redan inloggad
         try {
             currentCustomer = repository.login(id, pin);
-            customerAccounts = repository.getCustomerAccounts(currentCustomer);
-            customerLoans = repository.getCustomerLoans(currentCustomer);
             return true;
         } catch (Exception e) {
             currentCustomer = null;
-            customerAccounts = null;
-            customerLoans = null;
             return false;
         }
     }
 
     public void logout() {
         currentCustomer = null;
-        customerAccounts = null;
-        customerLoans = null;
     }
 
     // Returnerar true oom uttaget lyckades, precis som i Repository
