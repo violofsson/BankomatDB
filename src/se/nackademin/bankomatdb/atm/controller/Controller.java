@@ -6,11 +6,21 @@ import se.nackademin.bankomatdb.atm.model.DTOLoan;
 import se.nackademin.bankomatdb.atm.model.DTOTransaction;
 import se.nackademin.bankomatdb.atm.repository.ATMRepository;
 
-import java.util.List;
+import java.util.Collection;
 
 public class Controller {
+    // Eftersom vi bara aldrig uppdaterar dem kan vi hämta konton och lån
+    // vid inloggning och lagra dem istället för att hämta på nytt varje gång.
+    // Transaktioner måste dock hämtas om, eftersom vi kan uppdatera dem
+    // genom att ta ut pengar.
     ATMRepository repository;
     DTOCustomer currentCustomer;
+    Collection<DTOAccount> customerAccounts;
+    Collection<DTOLoan> customerLoans;
+
+    public Controller() {
+        // Intialisera repository
+    }
 
     // TODO Kasta lämplig exception om kunden inte är initialiserad
     DTOCustomer getCurrentCustomer() {
@@ -19,25 +29,37 @@ public class Controller {
 
     // TODO Behandla rådatan för konton/lån och översätt från repository till vy
     // Vi lär behöva ändra returtyperna
-    List<DTOAccount> getCustomerAccounts() {
-        return repository.getCustomerAccounts(getCurrentCustomer());
+    Collection<DTOAccount> getCustomerAccounts() {
+        return customerAccounts;
     }
 
-    List<DTOTransaction> getTransactionHistory(DTOAccount account) {
+    Collection<DTOTransaction> getTransactionHistory(DTOAccount account) {
         return repository.getTransactionHistory(account);
     }
 
-    List<DTOLoan> getCustomerLoans() {
-        return repository.getCustomerLoans(getCurrentCustomer());
+    Collection<DTOLoan> getCustomerLoans() {
+        return customerLoans;
     }
 
     public boolean login(String id, String pin) {
-        currentCustomer = repository.login(id, pin);
-        return (currentCustomer != null);
+        // TODO Kasta exception om redan inloggad
+        try {
+            currentCustomer = repository.login(id, pin);
+            customerAccounts = repository.getCustomerAccounts(currentCustomer);
+            customerLoans = repository.getCustomerLoans(currentCustomer);
+            return true;
+        } catch (Exception e) {
+            currentCustomer = null;
+            customerAccounts = null;
+            customerLoans = null;
+            return false;
+        }
     }
 
     public void logout() {
         currentCustomer = null;
+        customerAccounts = null;
+        customerLoans = null;
     }
 
     // Returnerar true oom uttaget lyckades, precis som i Repository
