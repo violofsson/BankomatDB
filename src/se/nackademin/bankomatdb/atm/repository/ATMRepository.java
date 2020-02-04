@@ -21,5 +21,6 @@ public interface ATMRepository {
 
     // Returnerar true oom uttaget lyckas
     // Kontanterna lär lagras som flyttal i databasen, men uttag är alltid i hela kronor
+    // TODO Returnera kontoobjekt istället?
     boolean withdraw(DTOAccount account, int amount);
 }

@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 // TODO
 public class DTOLoan {
-    // Hur ska låntagaren lagras? Behöver hen lagras alls när vi bara hanterar en kund i taget?
+    // Hur ska låntagaren lagras? Behöver hen lagras alls eller ska klienten hantera det?
     // Ska vi hålla reda på lånets originalbelopp? Kanske i adminpanelen?
 
     public int getLoanId() {

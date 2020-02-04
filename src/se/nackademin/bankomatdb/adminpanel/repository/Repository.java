@@ -9,25 +9,29 @@ import java.util.Collection;
 
 // TODO
 public interface Repository {
-    // TODO Ska upserts returnera nytt DTO-objekt eller bara meddela lyckad/misslyckad
-    // operation och låte klienten läsa in objekten själv?
-    DTOCustomer addCustomer();
+    // Obs: upserts returnerar skapat/uppdaterat objekt, vilket kanske eller kanske inte
+    // är detsamma som eventuell inparameter
+    // TODO Bestäm en regel för samma/olika objekt och följ konsekvent
+    // TODO Kasta relevanta exceptions när en operation misslyckas
+
+    DTOCustomer addCustomer(); // TODO Parametrar för nya fält - eller kundobjekt?
+
+    DTOCustomer updateCustomer(DTOCustomer customer); // TODO Parametrar för uppdaterade fält
 
     boolean deleteCustomer(DTOCustomer customer);
 
-    DTOAccount openAccount(DTOCustomer customer);
+    DTOAccount openAccount(DTOCustomer customer); // TODO Parametrar för nya fält
 
     boolean closeAccount(DTOAccount account);
 
-    boolean deposit(DTOAccount account, double amount);
+    // Positiv parameter -> insättning, negativ parameter -> uttag
+    DTOAccount transact(DTOAccount account, double netBalance);
 
-    boolean withdraw(DTOAccount account, double amount);
+    DTOAccount setAccountInterestRate(DTOAccount account, double newInterestRate);
 
-    boolean setAccountInterestRate(DTOAccount account, double newInterestRate);
+    DTOLoan approveLoan(); // TODO Parametrar för nya fält
 
-    void approveLoan();
-
-    boolean updateLoan();
+    DTOLoan updateLoan(DTOLoan loan); // TODO Parametrar för ändrade fält
 
     Collection<DTOCustomer> getCustomerData();
 
@@ -35,5 +39,5 @@ public interface Repository {
 
     Collection<DTOLoan> getLoanData(DTOCustomer customer);
 
-    Collection<DTOTransaction> getTransactionHistory(DTOCustomer customer);
+    Collection<DTOTransaction> getTransactionHistory(DTOAccount account); // Per kund? För alla?
 }
