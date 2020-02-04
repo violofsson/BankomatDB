@@ -18,11 +18,11 @@ public interface Repository {
 
     DTOCustomer updateCustomer(DTOCustomer customer); // TODO Parametrar för uppdaterade fält
 
-    boolean deleteCustomer(DTOCustomer customer);
+    void deleteCustomer(DTOCustomer customer);
 
     DTOAccount openAccount(DTOCustomer customer); // TODO Parametrar för nya fält
 
-    boolean closeAccount(DTOAccount account);
+    void closeAccount(DTOAccount account);
 
     // Positiv parameter -> insättning, negativ parameter -> uttag
     DTOAccount transact(DTOAccount account, double netBalance);
