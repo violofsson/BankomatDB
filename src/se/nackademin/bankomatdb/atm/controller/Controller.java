@@ -9,10 +9,12 @@ import se.nackademin.bankomatdb.atm.repository.ATMRepository;
 import java.util.Collection;
 
 public class Controller {
-    // Eftersom vi bara aldrig uppdaterar dem kan vi hämta konton och lån
-    // vid inloggning och lagra dem istället för att hämta på nytt varje gång.
+    // Eftersom vi aldrig uppdaterar dem kan vi hämta konton och lån vid inloggning
+    // och lagra dem istället för att hämta på nytt varje gång.
     // Transaktioner måste dock hämtas om, eftersom vi kan uppdatera dem
     // genom att ta ut pengar.
+    // TODO Men saldouppdatering då???
+    // Riktiga bankomater "loggar ut" efter en transaktion - ska vi göra detsamma?
     ATMRepository repository;
     DTOCustomer currentCustomer;
     Collection<DTOAccount> customerAccounts;
