@@ -11,7 +11,7 @@ public class DTOLoan {
         return 0;
     }
 
-    public double getCurrentBalance() {
+    public double getTotalPayment() {
         return 0;
     }
 
