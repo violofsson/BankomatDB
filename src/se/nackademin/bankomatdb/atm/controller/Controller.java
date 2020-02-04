@@ -1,9 +1,9 @@
 package se.nackademin.bankomatdb.atm.controller;
 
-import se.nackademin.bankomatdb.atm.model.DTOAccount;
-import se.nackademin.bankomatdb.atm.model.DTOCustomer;
-import se.nackademin.bankomatdb.atm.model.DTOLoan;
-import se.nackademin.bankomatdb.atm.model.DTOTransaction;
+import se.nackademin.bankomatdb.model.DTOAccount;
+import se.nackademin.bankomatdb.model.DTOCustomer;
+import se.nackademin.bankomatdb.model.DTOLoan;
+import se.nackademin.bankomatdb.model.DTOTransaction;
 import se.nackademin.bankomatdb.atm.repository.ATMRepository;
 
 import java.util.Collection;
@@ -24,7 +24,7 @@ public class Controller {
     // TODO Behandla rådatan för konton/lån och översätt från repository till vy
     // Vi lär behöva ändra returtyperna
     Collection<DTOAccount> getCustomerAccounts() {
-        return repository.getCustomerAccounts(currentCustomer);
+        return repository.getCustomerAccounts(getCurrentCustomer());
     }
 
     Collection<DTOTransaction> getTransactionHistory(DTOAccount account) {
@@ -32,7 +32,7 @@ public class Controller {
     }
 
     Collection<DTOLoan> getCustomerLoans() {
-        return repository.getCustomerLoans(currentCustomer);
+        return repository.getCustomerLoans(getCurrentCustomer());
     }
 
     public boolean login(String id, String pin) {

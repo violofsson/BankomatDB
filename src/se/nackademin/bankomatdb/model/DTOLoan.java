@@ -1,4 +1,4 @@
-package se.nackademin.bankomatdb.atm.model;
+package se.nackademin.bankomatdb.model;
 
 import java.time.LocalDate;
 

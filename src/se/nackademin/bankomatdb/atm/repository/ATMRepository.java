@@ -1,9 +1,9 @@
 package se.nackademin.bankomatdb.atm.repository;
 
-import se.nackademin.bankomatdb.atm.model.DTOAccount;
-import se.nackademin.bankomatdb.atm.model.DTOCustomer;
-import se.nackademin.bankomatdb.atm.model.DTOLoan;
-import se.nackademin.bankomatdb.atm.model.DTOTransaction;
+import se.nackademin.bankomatdb.model.DTOAccount;
+import se.nackademin.bankomatdb.model.DTOCustomer;
+import se.nackademin.bankomatdb.model.DTOLoan;
+import se.nackademin.bankomatdb.model.DTOTransaction;
 
 import java.util.List;
 
