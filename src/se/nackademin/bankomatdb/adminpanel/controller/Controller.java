@@ -25,20 +25,15 @@ public class Controller {
     }
 
     boolean deleteCustomer(DTOCustomer customer) throws DatabaseConnectionException {
-        try {
-            repository.deleteCustomer(customer.getCustomerId());
-            return true;
-        } catch (NoSuchCustomerException nsce) {
-            return false;
-        }
+        return repository.deleteCustomer(customer.getCustomerId());
     }
 
     DTOAccount openAccount(DTOCustomer customer, double interestRate) throws DatabaseConnectionException, NoSuchCustomerException {
         return repository.openAccount(customer.getCustomerId(), interestRate);
     }
 
-    void closeAccount(DTOAccount account) throws DatabaseConnectionException, NoSuchCustomerException {
-        repository.closeAccount(account.getAccountId());
+    boolean closeAccount(DTOAccount account) throws DatabaseConnectionException {
+        return repository.closeAccount(account.getAccountId());
     }
 
     void deposit(DTOAccount account, double amount) throws DatabaseConnectionException, NoSuchAccountException {

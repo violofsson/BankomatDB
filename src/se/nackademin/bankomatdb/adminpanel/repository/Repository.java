@@ -22,12 +22,12 @@ public interface Repository {
     // Ogiltiga fält
     DTOCustomer updateCustomer(DTOCustomer customer) throws DatabaseConnectionException; // TODO Parametrar för uppdaterade fält
 
-    void deleteCustomer(int customerId) throws DatabaseConnectionException, NoSuchCustomerException;
+    boolean deleteCustomer(int customerId) throws DatabaseConnectionException;
 
     // Ogltiga fält
     DTOAccount openAccount(int customerId, double interestRate) throws DatabaseConnectionException, NoSuchCustomerException;
 
-    void closeAccount(int accountId) throws DatabaseConnectionException, NoSuchCustomerException;
+    boolean closeAccount(int accountId) throws DatabaseConnectionException;
 
     DTOAccount deposit(int accountId, double amount) throws DatabaseConnectionException, NoSuchAccountException;
 

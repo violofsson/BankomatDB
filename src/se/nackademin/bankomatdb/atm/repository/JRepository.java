@@ -29,10 +29,10 @@ public class JRepository implements ATMRepository {
     @Override
     public List<DTOAccount> getCustomerAccounts(int customerId) throws DatabaseConnectionException {
         List<DTOAccount> accounts = new ArrayList<>();
-        try (Connection conn = getConnection()) {
-            String accountQuery = "SELECT Konto.Kontonummer AS id, Konto.Saldo AS balance, Konto.Räntesats AS interest " +
-                    "FROM Konto WHERE Konto.Kund = ?";
-            PreparedStatement ps = conn.prepareStatement(accountQuery);
+        String accountQuery = "SELECT Konto.Kontonummer AS id, Konto.Saldo AS balance, Konto.Räntesats AS interest " +
+                "FROM Konto WHERE Konto.Kund = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(accountQuery)) {
             ps.setInt(1, customerId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -58,12 +58,12 @@ public class JRepository implements ATMRepository {
     @Override
     public List<DTOTransaction> getTransactionHistory(int accountId) throws DatabaseConnectionException, NoSuchAccountException {
         List<DTOTransaction> transactions = new ArrayList<>();
-        try (Connection conn = getConnection()) {
-            String transactionQuery = "SELECT Transaktion.TransaktionID AS id, " +
-                    "Transaktion.Saldoförändring AS net_balance, " +
-                    "Transaktion.Tidpunkt AS transaction_time " +
-                    "FROM Transaktion WHERE Transaktion.Konto = ?";
-            PreparedStatement ps = conn.prepareStatement(transactionQuery);
+        String transactionQuery = "SELECT Transaktion.TransaktionID AS id, " +
+                "Transaktion.Saldoförändring AS net_balance, " +
+                "Transaktion.Tidpunkt AS transaction_time " +
+                "FROM Transaktion WHERE Transaktion.Konto = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(transactionQuery)) {
             ps.setInt(1, accountId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -79,9 +79,9 @@ public class JRepository implements ATMRepository {
 
     @Override
     public DTOCustomer login(String identification, String pin) throws DatabaseConnectionException, InvalidCredentialsException {
-        try (Connection conn = getConnection()) {
-            PreparedStatement ps = conn.prepareStatement("SELECT Kund.Kundnummer AS id, Kund.Namn AS customer_name " +
-                    "FROM Kund WHERE Kund.Personnummer = ? AND Kund.Pin = ?");
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement("SELECT Kund.Kundnummer AS id, Kund.Namn AS customer_name " +
+                     "FROM Kund WHERE Kund.Personnummer = ? AND Kund.Pin = ?")) {
             ps.setString(1, identification);
             ps.setString(2, pin);
             ResultSet rs = ps.executeQuery();

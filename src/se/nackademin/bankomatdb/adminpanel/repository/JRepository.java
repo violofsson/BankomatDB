@@ -30,7 +30,23 @@ public class JRepository implements Repository {
 
     @Override
     public DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException {
-        return null;
+        String openStatement = "INSERT INTO Kund (Namn, Personnummer, Pin) VALUES (?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(openStatement)) {
+            ps.setString(1, name);
+            ps.setString(2, personalId);
+            ps.setString(3, pin);
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows > 0) {
+                ResultSet rs = ps.getGeneratedKeys();
+                rs.next(); // Garanterat då affectedRows > 0
+                return new DTOCustomer(rs.getInt("Kundnummer"), rs.getString("Namn"), rs.getString("Personnummer"), rs.getString("Pin"));
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new DatabaseConnectionException(e);
+        }
     }
 
     @Override
@@ -39,18 +55,36 @@ public class JRepository implements Repository {
     }
 
     @Override
-    public void deleteCustomer(int customerId) throws DatabaseConnectionException, NoSuchCustomerException {
-
+    public boolean deleteCustomer(int customerId) throws DatabaseConnectionException {
+        return deleteEntityById(customerId, "DELETE FROM Kund WHERE Kund.Kundnummer = ?");
     }
 
     @Override
     public DTOAccount openAccount(int customerId, double interestRate) throws DatabaseConnectionException, NoSuchCustomerException {
-        return null;
+        String openStatement = "INSERT INTO Konto (Kund, Saldo, Räntesats) VALUES (?, ?, ?) ";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(openStatement)) {
+            ps.setInt(1, customerId);
+            ps.setDouble(2, 0);
+            ps.setDouble(3, interestRate);
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows > 0) {
+                ResultSet rs = ps.getGeneratedKeys();
+                rs.next(); // Garanterat då affectedRows > 0
+                return new DTOAccount(rs.getInt("Kontonummer"), rs.getInt("Kund"), rs.getDouble("Saldo"), rs.getDouble("Räntesats"));
+            } else {
+                return null;
+            }
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new NoSuchCustomerException(e);
+        } catch (SQLException e) {
+            throw new DatabaseConnectionException(e);
+        }
     }
 
     @Override
-    public void closeAccount(int accountId) throws DatabaseConnectionException, NoSuchCustomerException {
-
+    public boolean closeAccount(int accountId) throws DatabaseConnectionException {
+        return deleteEntityById(accountId, "DELETE FROM Konto WHERE Konto.Kontonummer = ?");
     }
 
     @Override
@@ -150,5 +184,16 @@ public class JRepository implements Repository {
 
     private Connection getConnection() throws SQLException {
         return DriverManager.getConnection(connectionProperties.getProperty("connectionURL"), connectionProperties.getProperty("username"), connectionProperties.getProperty("password"));
+    }
+
+    private boolean deleteEntityById(int id, String statement) throws DatabaseConnectionException {
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(statement)) {
+            ps.setInt(1, id);
+            int affectedRows = ps.executeUpdate();
+            return (affectedRows != 0);
+        } catch (SQLException e) {
+            throw new DatabaseConnectionException(e);
+        }
     }
 }

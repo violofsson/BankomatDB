@@ -1,6 +1,7 @@
 package se.nackademin.bankomatdb.model;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 // TODO
 public final class DTOLoan {
@@ -30,7 +31,7 @@ public final class DTOLoan {
     }
 
     public double getFinalPayment() {
-        return 0;
+        return originalLoan * Math.pow(1 + (interestRate/100), ChronoUnit.MONTHS.between(granted, deadline));
     }
 
     public double getInterestRate() {
