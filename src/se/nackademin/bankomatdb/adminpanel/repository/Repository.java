@@ -17,7 +17,7 @@ public interface Repository {
     // TODO Kasta relevanta exceptions när en operation misslyckas
 
     // Ogiltiga fält
-    DTOCustomer addCustomer() throws DatabaseConnectionException; // TODO Parametrar för nya fält - eller kundobjekt?
+    DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException; // TODO Parametrar för nya fält - eller kundobjekt?
 
     // Ogiltiga fält
     DTOCustomer updateCustomer(DTOCustomer customer) throws DatabaseConnectionException; // TODO Parametrar för uppdaterade fält

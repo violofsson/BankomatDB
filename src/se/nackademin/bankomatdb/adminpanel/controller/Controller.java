@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 public class Controller {
     Repository repository;
 
-    DTOCustomer addCustomer() {
-        return null;
+    DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException {
+        return repository.addCustomer(name, personalId, pin);
     }
 
     DTOCustomer updateCustomer(DTOCustomer customer) throws DatabaseConnectionException {
@@ -44,7 +44,7 @@ public class Controller {
     void deposit(DTOAccount account, double amount) throws DatabaseConnectionException, NoSuchAccountException {
         if (amount < 0)
             throw new IllegalArgumentException("Attempting to deposit a negative amount");
-            repository.deposit(account.getAccountId(), amount);
+        repository.deposit(account.getAccountId(), amount);
     }
 
     void withdraw(DTOAccount account, double amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchAccountException {
@@ -53,16 +53,16 @@ public class Controller {
         repository.withdraw(account.getAccountId(), -amount);
     }
 
-    void updateInterestRate(DTOAccount account, double newRate) throws DatabaseConnectionException, NoSuchAccountException {
-        repository.setAccountInterestRate(account.getAccountId(), newRate);
+    DTOAccount updateInterestRate(DTOAccount account, double newRate) throws DatabaseConnectionException, NoSuchAccountException {
+        return repository.setAccountInterestRate(account.getAccountId(), newRate);
     }
 
-    void approveLoan(double sum, double interestRate, LocalDate deadline) {
-        approveLoan(sum, interestRate, deadline);
+    DTOLoan approveLoan(DTOCustomer customer, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, NoSuchCustomerException {
+        return repository.approveLoan(customer.getCustomerId(), sum, interestRate, deadline);
     }
 
-    void updateLoan(DTOLoan loan, double newInterestRate, LocalDate newDeadline) throws DatabaseConnectionException, NoSuchLoanException {
-        repository.updateLoan(new DTOLoan(loan.getLoanId()));
+    DTOLoan updateLoan(DTOLoan loan, double newInterestRate, LocalDate newDeadline) throws DatabaseConnectionException, NoSuchLoanException {
+        return repository.updateLoan(loan.updated(newInterestRate, newDeadline));
     }
 
     Collection<DTOCustomer> getCustomers() throws DatabaseConnectionException {
