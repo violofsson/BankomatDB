@@ -1,5 +1,6 @@
 package se.nackademin.bankomatdb.atm.repository;
 
+import se.nackademin.bankomatdb.*;
 import se.nackademin.bankomatdb.model.DTOAccount;
 import se.nackademin.bankomatdb.model.DTOCustomer;
 import se.nackademin.bankomatdb.model.DTOLoan;
@@ -10,22 +11,19 @@ import java.util.List;
 // Tanken är att bankomaten hämtar ett kundobjekt vid inloggning och återanvänder det
 // TODO Ange eventuella exceptions
 public interface ATMRepository {
-    // Inga konton, kunden finns inte, kunde inte nå databasen
-    List<DTOAccount> getCustomerAccounts(DTOCustomer customer);
+    List<DTOAccount> getCustomerAccounts(int customerId) throws DatabaseConnectionException, NoSuchCustomerException;
 
-    // Inga lån, kunden finns inte, kunde inte nå databasen
-    List<DTOLoan> getCustomerLoans(DTOCustomer customer);
+    List<DTOLoan> getCustomerLoans(int customerId) throws DatabaseConnectionException, NoSuchCustomerException;
 
-    // Inga transaktioner, kontot finns inte, kunde inte nå databasen
-    List<DTOTransaction> getTransactionHistory(DTOAccount account);
+    // Kontot tillhör inte kunden?
+    List<DTOTransaction> getTransactionHistory(int accountId) throws DatabaseConnectionException, NoSuchAccountException;
 
     // Kan behöva ses över senare. Vad används för identifikation? Är strängar det rätta valet?
-    // Felaktiga uppgifter, kunde inte nå databasen
-    DTOCustomer login(String identification, String pin);
+    DTOCustomer login(String identification, String pin) throws DatabaseConnectionException, InvalidCredentialsException;
 
     // Returnerar true oom uttaget lyckas
     // Kontanterna lär lagras som flyttal i databasen, men uttag är alltid i hela kronor
-    // Kontot finns inte, för lite pengar, kunde inte nå databasen
+    // Kontot tillhör inte kunden?
     // TODO Returnera kontoobjekt istället?
-    boolean withdraw(DTOAccount account, int amount);
+    boolean withdraw(int accountId, int amount) throws DatabaseConnectionException, InsufficientFundsException, NoSuchAccountException;
 }

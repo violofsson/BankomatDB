@@ -1,14 +1,14 @@
 package se.nackademin.bankomatdb.adminpanel.controller;
 
+import se.nackademin.bankomatdb.*;
 import se.nackademin.bankomatdb.adminpanel.repository.Repository;
-import se.nackademin.bankomatdb.adminpanel.viewmodel.VMAccount;
-import se.nackademin.bankomatdb.adminpanel.viewmodel.VMCustomer;
-import se.nackademin.bankomatdb.adminpanel.viewmodel.VMLoan;
-import se.nackademin.bankomatdb.adminpanel.viewmodel.VMTransaction;
 import se.nackademin.bankomatdb.model.DTOAccount;
 import se.nackademin.bankomatdb.model.DTOCustomer;
+import se.nackademin.bankomatdb.model.DTOLoan;
+import se.nackademin.bankomatdb.model.DTOTransaction;
 
 import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDateTime;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -16,73 +16,71 @@ import java.util.stream.Collectors;
 public class Controller {
     Repository repository;
 
-    VMCustomer addCustomer() {
-        return null;
+    DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException {
+        return repository.addCustomer(name, personalId, pin);
     }
 
-    // Uppdatera kunduppgifter
-
-    boolean deleteCustomer(VMCustomer customer) {
-        return false;
+    DTOCustomer updateCustomer(DTOCustomer customer) throws DatabaseConnectionException {
+        return repository.updateCustomer(customer);
     }
 
-    VMAccount openAccount(VMCustomer customer) {
-        return null;
+    boolean deleteCustomer(DTOCustomer customer) throws DatabaseConnectionException {
+        try {
+            repository.deleteCustomer(customer.getCustomerId());
+            return true;
+        } catch (NoSuchCustomerException nsce) {
+            return false;
+        }
     }
 
-    boolean closeAccount(VMAccount account) {
-        return false;
+    DTOAccount openAccount(DTOCustomer customer, double interestRate) throws DatabaseConnectionException, NoSuchCustomerException {
+        return repository.openAccount(customer.getCustomerId(), interestRate);
     }
 
-    void deposit(VMAccount account, double amount) {
+    void closeAccount(DTOAccount account) throws DatabaseConnectionException, NoSuchCustomerException {
+        repository.closeAccount(account.getAccountId());
+    }
+
+    void deposit(DTOAccount account, double amount) throws DatabaseConnectionException, NoSuchAccountException {
         if (amount < 0)
             throw new IllegalArgumentException("Attempting to deposit a negative amount");
-        repository.transact(new DTOAccount(), Math.abs(amount));
+        repository.deposit(account.getAccountId(), amount);
     }
 
-    void withdraw(VMAccount account, double amount) {
+    void withdraw(DTOAccount account, double amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchAccountException {
         if (amount < 0)
-            throw new IllegalArgumentException("Attempting to withdraw a negative amout");
-        repository.transact(new DTOAccount(), -1 * Math.abs(amount));
+            throw new IllegalArgumentException("Attempting to withdraw a negative amount");
+        repository.withdraw(account.getAccountId(), -amount);
     }
 
-    void updateInterestRate(VMAccount account, double newRate) {
-        repository.setAccountInterestRate(new DTOAccount(), newRate);
+    DTOAccount updateInterestRate(DTOAccount account, double newRate) throws DatabaseConnectionException, NoSuchAccountException {
+        return repository.setAccountInterestRate(account.getAccountId(), newRate);
     }
 
-    void approveLoan() {
-
+    DTOLoan approveLoan(DTOCustomer customer, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, NoSuchCustomerException {
+        return repository.approveLoan(customer.getCustomerId(), sum, interestRate, deadline);
     }
 
-    void updateLoan(VMLoan loan) {
-
+    DTOLoan updateLoan(DTOLoan loan, double newInterestRate, LocalDate newDeadline) throws DatabaseConnectionException, NoSuchLoanException {
+        return repository.updateLoan(loan.updated(newInterestRate, newDeadline));
     }
 
-    Collection<VMCustomer> getCustomers() {
-        return repository.getCustomerData()
+    Collection<DTOCustomer> getCustomers() throws DatabaseConnectionException {
+        return repository.getCustomerData();
+    }
+
+    Collection<DTOAccount> getCustomerAccounts(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException {
+        return repository.getAccountData(customer);
+    }
+
+    Collection<DTOLoan> getCustomerLoans(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException {
+        return repository.getLoanData(customer);
+    }
+
+    Collection<DTOTransaction> getAccountTransactions(DTOAccount account, LocalDate since) throws DatabaseConnectionException, NoSuchAccountException {
+        return repository.getTransactionHistory(account)
                 .stream()
-                .map(c -> new VMCustomer())
-                .collect(Collectors.toList());
-    }
-
-    Collection<VMAccount> getCustomerAccounts(VMCustomer customer) {
-        return repository.getAccountData(new DTOCustomer())
-                .stream()
-                .map(a -> new VMAccount())
-                .collect(Collectors.toList());
-    }
-
-    Collection<VMLoan> getCustomerLoans(VMCustomer customer) {
-        return repository.getLoanData(new DTOCustomer())
-                .stream()
-                .map(l -> new VMLoan())
-                .collect(Collectors.toList());
-    }
-
-    Collection<VMTransaction> getAccountTransactions(VMAccount account, LocalDate since) {
-        return repository.getTransactionHistory(new DTOAccount())
-                .stream()
-                .map(t -> new VMTransaction())
+                .filter(t -> !t.getTransactionTime().isBefore(ChronoLocalDateTime.from(since)))
                 .collect(Collectors.toList());
     }
 }
