@@ -1,7 +1,7 @@
 package se.nackademin.bankomatdb.model;
 
 // TODO
-public class DTOCustomer {
+public final class DTOCustomer {
     public int getCustomerId() {
         return 0;
     }

@@ -3,19 +3,22 @@ package se.nackademin.bankomatdb.model;
 import java.time.LocalDate;
 
 // TODO
-public class DTOLoan {
+public final class DTOLoan {
     // Hur ska låntagaren lagras? Behöver hen lagras alls eller ska klienten hantera det?
-    // Ska vi hålla reda på lånets originalbelopp? Kanske i adminpanelen?
 
     public int getLoanId() {
         return 0;
     }
 
-    public double getTotalPayment() {
+    public double getFinalPayment() {
         return 0;
     }
 
     public double getInterestRate() {
+        return 0;
+    }
+
+    public double getOriginalLoan() {
         return 0;
     }
 

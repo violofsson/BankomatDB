@@ -1,7 +1,7 @@
 package se.nackademin.bankomatdb.model;
 
 // TODO
-public class DTOAccount {
+public final class DTOAccount {
     public int getAccountId() {
         return 0;
     }

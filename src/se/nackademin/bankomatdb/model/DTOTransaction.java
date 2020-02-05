@@ -1,7 +1,7 @@
 package se.nackademin.bankomatdb.model;
 
 // TODO
-public class DTOTransaction {
+public final class DTOTransaction {
     // Ska konto och ev kund hanteras som lagrat id eller konstruktorparameterobjekt?
     public int getTransactionId() {
         return 0;

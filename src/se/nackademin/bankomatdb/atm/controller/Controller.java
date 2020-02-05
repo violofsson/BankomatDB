@@ -19,6 +19,7 @@ public class Controller {
     }
 
     // TODO Kasta lämplig exception om kunden inte är initialiserad
+    // Redan inloggad
     DTOCustomer getCurrentCustomer() {
         return currentCustomer;
     }
@@ -55,6 +56,7 @@ public class Controller {
         }
     }
 
+    // Inte inloggad
     public void logout() {
         currentCustomer = null;
     }
