@@ -6,6 +6,7 @@ import se.nackademin.bankomatdb.model.DTOCustomer;
 import se.nackademin.bankomatdb.model.DTOLoan;
 import se.nackademin.bankomatdb.model.DTOTransaction;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
 // TODO
@@ -24,18 +25,19 @@ public interface Repository {
     void deleteCustomer(int customerId) throws DatabaseConnectionException, NoSuchCustomerException;
 
     // Ogltiga fält
-    DTOAccount openAccount(int customerId) throws DatabaseConnectionException, NoSuchCustomerException; // TODO Parametrar för nya fält
+    DTOAccount openAccount(int customerId, double interestRate) throws DatabaseConnectionException, NoSuchCustomerException; // TODO Parametrar för nya fält
 
     void closeAccount(int accountId) throws DatabaseConnectionException, NoSuchCustomerException;
 
-    // Positiv parameter -> insättning, negativ parameter -> uttag
-    DTOAccount transact(int accountId, double netBalance) throws DatabaseConnectionException, NoSuchAccountException, InsufficientFundsException;
+    DTOAccount deposit(int accountId, double amount) throws DatabaseConnectionException, NoSuchAccountException;
+
+    DTOAccount withdraw(int accountId, double amount) throws DatabaseConnectionException, NoSuchAccountException, InsufficientFundsException;
 
     // Ogiltig ränta
     DTOAccount setAccountInterestRate(int accountId, double newInterestRate) throws DatabaseConnectionException, NoSuchAccountException;
 
     // Ogiltiga fält
-    DTOLoan approveLoan(int customerId) throws DatabaseConnectionException, NoSuchCustomerException; // TODO Parametrar för nya fält
+    DTOLoan approveLoan(int customerId, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, NoSuchCustomerException; // TODO Parametrar för nya fält
 
     // Ogiltiga fält
     DTOLoan updateLoan(DTOLoan loan) throws DatabaseConnectionException, NoSuchLoanException; // TODO Parametrar för ändrade fält
