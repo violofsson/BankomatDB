@@ -1,7 +1,5 @@
 package se.nackademin.bankomatdb.Database;
 
-import se.nackademin.bankomatdb.adminpanel.View.LåneHanteringView;
-
 import java.sql.*;
 
 
