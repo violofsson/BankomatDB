@@ -11,11 +11,13 @@ public class LoginView extends JFrame {
     private JPasswordField passwordField = new JPasswordField();
     private JButton loginButton = new JButton("Login");
     private JButton resetButton = new JButton("Reset");
+    private ActionListenerLogin actionListener = new ActionListenerLogin(passwordField, loginButton, resetButton);
 
     LoginView() {
         setLayout();
         setLocationAndSize();
         addComponentsToContainer();
+        addActionEvent();
         this.setTitle("Login");
         this.setSize(300, 310);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -50,5 +52,7 @@ public class LoginView extends JFrame {
     }
 
     public void addActionEvent() {
+        loginButton.addActionListener(actionListener);
+        resetButton.addActionListener(actionListener);
     }
 }
