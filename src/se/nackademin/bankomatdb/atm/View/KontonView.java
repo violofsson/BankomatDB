@@ -1,12 +1,12 @@
 package se.nackademin.bankomatdb.atm.View;
 
-import se.nackademin.bankomatdb.atm.viewmodel.VMAccount;
+import se.nackademin.bankomatdb.model.DTOAccount;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 
-public class KontonView extends JFrame{
+public class KontonView extends JFrame {
 
     private Container container = getContentPane();
     private JLabel väljKontoLabel = new JLabel("Välj konto");
@@ -15,7 +15,7 @@ public class KontonView extends JFrame{
     private JButton seSaldo = new JButton("Se Saldo");
     private JButton kontoHistorik = new JButton("Kontohistorik");
     private ActionListenerKonton actionListener = new ActionListenerKonton(konton, taUt, seSaldo, kontoHistorik);
-    private HashMap<String, VMAccount> kontoLista;
+    private HashMap<String, DTOAccount> kontoLista;
 
     KontonView() {
         setLayout();
@@ -62,7 +62,7 @@ public class KontonView extends JFrame{
     }
 
     public void fillComboBox() {
-        //Fyll hashmapen med Kontonamn och Konton
+        //Fyll hashmapen (kontoLista) med Kontonamn och Konton
         for (String kontoNamn : kontoLista.keySet()) {
             konton.addItem(kontoNamn);
         }

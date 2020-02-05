@@ -1,5 +1,7 @@
 package se.nackademin.bankomatdb.atm.View;
 
+import se.nackademin.bankomatdb.Database.Test;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,8 +24,7 @@ public class ActionListenerLogin extends JFrame implements ActionListener {
 
         if (e.getSource() == loginButton) {
             kontonView.setVisible(true);
-            // Skapa en checkpin metod.
-            // Skapa en current Customer metod.
+            //Lägg till checkpin metod.
 
         }else if (e.getSource() == resetButton) {
             passwordField.setText("");

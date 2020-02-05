@@ -24,6 +24,9 @@ public class StartView extends JFrame{
     private JLabel hanteraLånLabel = new JLabel("Hantera lån");
     private JComboBox hanteraLånComboBox = new JComboBox();
     private JButton hanteraLånButton = new JButton("Gå vidare");
+    private ActionListenerStart actionListener = new ActionListenerStart(läggTillKundTextField, läggTillKundButton,
+            raderaKundComboBox, raderaKundButton, skapaKontoTextField, skapaKontoButton, avslutaKontoComboBox,
+            avslutaKontoButton, hanteraKontoComboBox, hanteraKontoButton, hanteraLånComboBox, hanteraLånButton);
 
     StartView() {
         setLayout();
@@ -94,6 +97,18 @@ public class StartView extends JFrame{
     }
 
     public void addActionEvent() {
+        läggTillKundTextField.addActionListener(actionListener);
+        läggTillKundButton.addActionListener(actionListener);
+        raderaKundComboBox.addActionListener(actionListener);
+        raderaKundButton.addActionListener(actionListener);
+        skapaKontoTextField.addActionListener(actionListener);
+        skapaKontoButton.addActionListener(actionListener);
+        avslutaKontoComboBox.addActionListener(actionListener);
+        avslutaKontoButton.addActionListener(actionListener);
+        hanteraKontoComboBox.addActionListener(actionListener);
+        hanteraKontoButton.addActionListener(actionListener);
+        hanteraLånComboBox.addActionListener(actionListener);
+        hanteraLånButton.addActionListener(actionListener);
 
     }
 }

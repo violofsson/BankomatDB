@@ -23,17 +23,19 @@ public class ActionListenerKonton implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         if (e.getSource() == kontonComboBox) {
-            //skapa currentkonto metod.
 
 
-        }else if (e.getSource() == taUt) {
+        } else if (e.getSource() == taUt) {
             int summa = Integer.parseInt(JOptionPane.showInputDialog(null, "Hur mycket vill du ta ut?"));
+            //Lägg till metod som tar bort summa från konto.
 
-        }else if (e.getSource() == seSaldo) {
+        } else if (e.getSource() == seSaldo) {
             JOptionPane.showMessageDialog(null, "Saldo: ");
+            //Lägg till saldo.
 
-        }else if (e.getSource() == kontoHistorik) {
+        } else if (e.getSource() == kontoHistorik) {
             System.out.println("Kontohistorik: ");
+            //Lägg till kontohistorik.
         }
     }
 }
