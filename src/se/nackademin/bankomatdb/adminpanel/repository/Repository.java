@@ -24,12 +24,12 @@ public interface Repository {
     // Ogiltiga fält
     DTOCustomer updateCustomer(DTOCustomer customer) throws DatabaseConnectionException; // TODO Parametrar för uppdaterade fält
 
-    void deleteCustomer(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException;
+    void deleteCustomer(int customerId) throws DatabaseConnectionException, NoSuchCustomerException;
 
     // Ogltiga fält
-    DTOAccount openAccount(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException; // TODO Parametrar för nya fält
+    DTOAccount openAccount(int customerId) throws DatabaseConnectionException, NoSuchCustomerException; // TODO Parametrar för nya fält
 
-    void closeAccount(DTOAccount account) throws DatabaseConnectionException, NoSuchCustomerException;
+    void closeAccount(int accountId) throws DatabaseConnectionException, NoSuchCustomerException;
 
     // Positiv parameter -> insättning, negativ parameter -> uttag
     DTOAccount transact(int accountId, double netBalance) throws DatabaseConnectionException, NoSuchAccountException, InsufficientFundsException;
@@ -38,7 +38,7 @@ public interface Repository {
     DTOAccount setAccountInterestRate(int accountId, double newInterestRate) throws DatabaseConnectionException, NoSuchAccountException;
 
     // Ogiltiga fält
-    DTOLoan approveLoan() throws DatabaseConnectionException, NoSuchCustomerException; // TODO Parametrar för nya fält
+    DTOLoan approveLoan(int customerId) throws DatabaseConnectionException, NoSuchCustomerException; // TODO Parametrar för nya fält
 
     // Ogiltiga fält, lånet finns inte
     DTOLoan updateLoan(DTOLoan loan) throws DatabaseConnectionException; // TODO Parametrar för ändrade fält

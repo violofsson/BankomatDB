@@ -15,11 +15,10 @@ public interface ATMRepository {
 
     List<DTOLoan> getCustomerLoans(int customerId) throws DatabaseConnectionException, NoSuchCustomerException;
 
-    // kontot tillhör inte kunden?
+    // Kontot tillhör inte kunden?
     List<DTOTransaction> getTransactionHistory(int accountId) throws DatabaseConnectionException, NoSuchAccountException;
 
     // Kan behöva ses över senare. Vad används för identifikation? Är strängar det rätta valet?
-    // Felaktiga uppgifter
     DTOCustomer login(String identification, String pin) throws DatabaseConnectionException, InvalidCredentialsException;
 
     // Returnerar true oom uttaget lyckas

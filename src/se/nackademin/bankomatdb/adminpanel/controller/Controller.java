@@ -11,6 +11,7 @@ import se.nackademin.bankomatdb.adminpanel.viewmodel.VMLoan;
 import se.nackademin.bankomatdb.adminpanel.viewmodel.VMTransaction;
 import se.nackademin.bankomatdb.model.DTOAccount;
 import se.nackademin.bankomatdb.model.DTOCustomer;
+import se.nackademin.bankomatdb.model.DTOLoan;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -26,8 +27,13 @@ public class Controller {
 
     // Uppdatera kunduppgifter
 
-    boolean deleteCustomer(VMCustomer customer) {
-        return false;
+    boolean deleteCustomer(VMCustomer customer) throws DatabaseConnectionException {
+        try {
+            repository.deleteCustomer(customer.getId());
+            return true;
+        } catch (NoSuchCustomerException nsce) {
+            return false;
+        }
     }
 
     VMAccount openAccount(VMCustomer customer) {
@@ -62,8 +68,8 @@ public class Controller {
 
     }
 
-    void updateLoan(VMLoan loan) {
-
+    void updateLoan(VMLoan loan) throws DatabaseConnectionException {
+        repository.updateLoan(new DTOLoan());
     }
 
     Collection<VMCustomer> getCustomers() throws DatabaseConnectionException {
