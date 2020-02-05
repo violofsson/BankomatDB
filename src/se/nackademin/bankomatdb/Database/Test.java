@@ -25,7 +25,19 @@ public class Test {
                 sb.append(rs.getInt("Pin")).append("\n");
             }
             System.out.println(sb);
+            sb.delete(0, sb.length());
 
+            System.out.println("-----------------");
+
+            rs = stmt.executeQuery("select * from Konto");
+            System.out.println("Kontonummer | Saldo | Räntesats | Kund");
+            while (rs.next()) {
+                sb.append(rs.getInt("Kontonummer")).append(" | ");
+                sb.append(rs.getString("Saldo")).append(" | ");
+                sb.append(rs.getInt("Räntesats")).append(" | ");
+                sb.append(rs.getInt("Kund")).append("\n");
+            }
+            System.out.println(sb);
         }
     }
 }
