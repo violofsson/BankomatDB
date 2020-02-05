@@ -5,9 +5,14 @@ import java.time.LocalDate;
 // TODO
 public final class DTOLoan {
     // Hur ska låntagaren lagras? Behöver hen lagras alls eller ska klienten hantera det?
+    private final int id;
+
+    public DTOLoan(int id) {
+        this.id = id;
+    }
 
     public int getLoanId() {
-        return 0;
+        return id;
     }
 
     public double getFinalPayment() {
