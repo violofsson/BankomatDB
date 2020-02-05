@@ -11,9 +11,9 @@ import java.util.List;
 // Tanken är att bankomaten hämtar ett kundobjekt vid inloggning och återanvänder det
 // TODO Ange eventuella exceptions
 public interface ATMRepository {
-    List<DTOAccount> getCustomerAccounts(int customerId) throws DatabaseConnectionException, NoSuchCustomerException;
+    List<DTOAccount> getCustomerAccounts(int customerId) throws DatabaseConnectionException;
 
-    List<DTOLoan> getCustomerLoans(int customerId) throws DatabaseConnectionException, NoSuchCustomerException;
+    List<DTOLoan> getCustomerLoans(int customerId) throws DatabaseConnectionException;
 
     // Kontot tillhör inte kunden?
     List<DTOTransaction> getTransactionHistory(int accountId) throws DatabaseConnectionException, NoSuchAccountException;

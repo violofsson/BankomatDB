@@ -10,8 +10,8 @@ import se.nackademin.bankomatdb.model.DTOTransaction;
 import java.util.Collection;
 
 public class Controller {
-    ATMRepository repository;
-    DTOCustomer currentCustomer;
+    private ATMRepository repository;
+    private DTOCustomer currentCustomer;
 
     public Controller() {
         // Intialisera repository
@@ -19,19 +19,19 @@ public class Controller {
 
     // TODO Kasta lämplig exception om kunden inte är initialiserad
     // Inte inloggad
-    DTOCustomer getCurrentCustomer() {
+    public DTOCustomer getCurrentCustomer() {
         return currentCustomer;
     }
 
-    Collection<DTOAccount> getCustomerAccounts() throws DatabaseConnectionException, NoSuchCustomerException {
+    public Collection<DTOAccount> getCustomerAccounts() throws DatabaseConnectionException, NoSuchCustomerException {
         return repository.getCustomerAccounts(getCurrentCustomer().getCustomerId());
     }
 
-    Collection<DTOTransaction> getTransactionHistory(DTOAccount account) throws DatabaseConnectionException, NoSuchAccountException {
+    public Collection<DTOTransaction> getTransactionHistory(DTOAccount account) throws DatabaseConnectionException, NoSuchAccountException {
         return repository.getTransactionHistory(account.getAccountId());
     }
 
-    Collection<DTOLoan> getCustomerLoans() throws DatabaseConnectionException, NoSuchCustomerException {
+    public Collection<DTOLoan> getCustomerLoans() throws DatabaseConnectionException, NoSuchCustomerException {
         return repository.getCustomerLoans(getCurrentCustomer().getCustomerId());
     }
 
@@ -55,7 +55,7 @@ public class Controller {
     }
 
     // Returnerar true oom uttaget lyckades, precis som i Repository
-    boolean withdraw(DTOAccount account, int amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchAccountException {
+    public boolean withdraw(DTOAccount account, int amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchAccountException {
         return repository.withdraw(account.getAccountId(), amount);
     }
 }
