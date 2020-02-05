@@ -1,5 +1,9 @@
 package se.nackademin.bankomatdb.adminpanel.controller;
 
+import se.nackademin.bankomatdb.DatabaseConnectionException;
+import se.nackademin.bankomatdb.InsufficientFundsException;
+import se.nackademin.bankomatdb.NoSuchAccountException;
+import se.nackademin.bankomatdb.NoSuchCustomerException;
 import se.nackademin.bankomatdb.adminpanel.repository.Repository;
 import se.nackademin.bankomatdb.adminpanel.viewmodel.VMAccount;
 import se.nackademin.bankomatdb.adminpanel.viewmodel.VMCustomer;
@@ -34,20 +38,24 @@ public class Controller {
         return false;
     }
 
-    void deposit(VMAccount account, double amount) {
+    void deposit(VMAccount account, double amount) throws DatabaseConnectionException, NoSuchAccountException {
         if (amount < 0)
             throw new IllegalArgumentException("Attempting to deposit a negative amount");
-        repository.transact(new DTOAccount(), Math.abs(amount));
+        try {
+            repository.transact(account.getId(), Math.abs(amount));
+        } catch (InsufficientFundsException ignored) {
+
+        }
     }
 
-    void withdraw(VMAccount account, double amount) {
+    void withdraw(VMAccount account, double amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchAccountException {
         if (amount < 0)
             throw new IllegalArgumentException("Attempting to withdraw a negative amout");
-        repository.transact(new DTOAccount(), -1 * Math.abs(amount));
+        repository.transact(account.getId(), -1 * Math.abs(amount));
     }
 
-    void updateInterestRate(VMAccount account, double newRate) {
-        repository.setAccountInterestRate(new DTOAccount(), newRate);
+    void updateInterestRate(VMAccount account, double newRate) throws DatabaseConnectionException, NoSuchAccountException {
+        repository.setAccountInterestRate(account.getId(), newRate);
     }
 
     void approveLoan() {
@@ -58,28 +66,28 @@ public class Controller {
 
     }
 
-    Collection<VMCustomer> getCustomers() {
+    Collection<VMCustomer> getCustomers() throws DatabaseConnectionException {
         return repository.getCustomerData()
                 .stream()
                 .map(c -> new VMCustomer())
                 .collect(Collectors.toList());
     }
 
-    Collection<VMAccount> getCustomerAccounts(VMCustomer customer) {
+    Collection<VMAccount> getCustomerAccounts(VMCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException {
         return repository.getAccountData(new DTOCustomer())
                 .stream()
                 .map(a -> new VMAccount())
                 .collect(Collectors.toList());
     }
 
-    Collection<VMLoan> getCustomerLoans(VMCustomer customer) {
+    Collection<VMLoan> getCustomerLoans(VMCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException {
         return repository.getLoanData(new DTOCustomer())
                 .stream()
                 .map(l -> new VMLoan())
                 .collect(Collectors.toList());
     }
 
-    Collection<VMTransaction> getAccountTransactions(VMAccount account, LocalDate since) {
+    Collection<VMTransaction> getAccountTransactions(VMAccount account, LocalDate since) throws DatabaseConnectionException, NoSuchAccountException {
         return repository.getTransactionHistory(new DTOAccount())
                 .stream()
                 .map(t -> new VMTransaction())

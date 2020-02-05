@@ -1,9 +1,9 @@
 package se.nackademin.bankomatdb.atm.controller;
 
+import se.nackademin.bankomatdb.*;
 import se.nackademin.bankomatdb.atm.viewmodel.VMAccount;
 import se.nackademin.bankomatdb.atm.viewmodel.VMLoan;
 import se.nackademin.bankomatdb.atm.viewmodel.VMTransaction;
-import se.nackademin.bankomatdb.model.DTOAccount;
 import se.nackademin.bankomatdb.model.DTOCustomer;
 import se.nackademin.bankomatdb.atm.repository.ATMRepository;
 
@@ -19,38 +19,41 @@ public class Controller {
     }
 
     // TODO Kasta lämplig exception om kunden inte är initialiserad
-    // Redan inloggad
+    // Inte inloggad
     DTOCustomer getCurrentCustomer() {
         return currentCustomer;
     }
 
-    Collection<VMAccount> getCustomerAccounts() {
-        return repository.getCustomerAccounts(getCurrentCustomer())
+    Collection<VMAccount> getCustomerAccounts() throws DatabaseConnectionException, NoSuchCustomerException {
+        return repository.getCustomerAccounts(getCurrentCustomer().getCustomerId())
                 .stream()
                 .map(a -> new VMAccount()) // TODO Ersätt med riktig konstruktoe
                 .collect(Collectors.toList());
     }
 
-    Collection<VMTransaction> getTransactionHistory(DTOAccount account) {
-        return repository.getTransactionHistory(account)
+    Collection<VMTransaction> getTransactionHistory(VMAccount account) throws DatabaseConnectionException, NoSuchAccountException {
+        return repository.getTransactionHistory(account.getAccountId())
                 .stream()
                 .map(t -> new VMTransaction()) // TODO Ersätt med riktig konstruktor
                 .collect(Collectors.toList());
     }
 
-    Collection<VMLoan> getCustomerLoans() {
-        return repository.getCustomerLoans(getCurrentCustomer())
+    Collection<VMLoan> getCustomerLoans() throws DatabaseConnectionException, NoSuchCustomerException {
+        return repository.getCustomerLoans(getCurrentCustomer().getCustomerId())
                 .stream()
                 .map(l -> new VMLoan()) // TODO Riktig konstruktor
                 .collect(Collectors.toList());
     }
 
-    public boolean login(String id, String pin) {
-        // TODO Kasta exception om redan inloggad
+    // Redan inloggad
+    public boolean login(String id, String pin) throws DatabaseConnectionException, AlreadyLoggedInException {
+        if (currentCustomer != null) {
+            throw new AlreadyLoggedInException();
+        }
         try {
             currentCustomer = repository.login(id, pin);
             return true;
-        } catch (Exception e) {
+        } catch (InvalidCredentialsException e) {
             currentCustomer = null;
             return false;
         }
@@ -62,8 +65,7 @@ public class Controller {
     }
 
     // Returnerar true oom uttaget lyckades, precis som i Repository
-    // TODO Översätt från vyns VMAccount till DTOAccount
-    boolean withdraw(DTOAccount account, int amount) {
-        return repository.withdraw(account, amount);
+    boolean withdraw(VMAccount account, int amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchAccountException {
+        return repository.withdraw(account.getAccountId(), amount);
     }
 }

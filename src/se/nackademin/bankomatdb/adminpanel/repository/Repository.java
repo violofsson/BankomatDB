@@ -1,5 +1,9 @@
 package se.nackademin.bankomatdb.adminpanel.repository;
 
+import se.nackademin.bankomatdb.DatabaseConnectionException;
+import se.nackademin.bankomatdb.InsufficientFundsException;
+import se.nackademin.bankomatdb.NoSuchAccountException;
+import se.nackademin.bankomatdb.NoSuchCustomerException;
 import se.nackademin.bankomatdb.model.DTOAccount;
 import se.nackademin.bankomatdb.model.DTOCustomer;
 import se.nackademin.bankomatdb.model.DTOLoan;
@@ -14,43 +18,36 @@ public interface Repository {
     // TODO Bestäm en regel för samma/olika objekt och följ konsekvent
     // TODO Kasta relevanta exceptions när en operation misslyckas
 
-    // Ogiltiga fält, kunde inte nå databasen
-    DTOCustomer addCustomer(); // TODO Parametrar för nya fält - eller kundobjekt?
+    // Ogiltiga fält
+    DTOCustomer addCustomer() throws DatabaseConnectionException; // TODO Parametrar för nya fält - eller kundobjekt?
 
-    // Ogiltiga fält, kunde inte nå databasen
-    DTOCustomer updateCustomer(DTOCustomer customer); // TODO Parametrar för uppdaterade fält
+    // Ogiltiga fält
+    DTOCustomer updateCustomer(DTOCustomer customer) throws DatabaseConnectionException; // TODO Parametrar för uppdaterade fält
 
-    // Kunden finns inte, kunde inte nå databasen
-    void deleteCustomer(DTOCustomer customer);
+    void deleteCustomer(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException;
 
-    // Ogltiga fält, kunden finns inte, kunde inte nå databasen
-    DTOAccount openAccount(DTOCustomer customer); // TODO Parametrar för nya fält
+    // Ogltiga fält
+    DTOAccount openAccount(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException; // TODO Parametrar för nya fält
 
-    // Kontot finns inte, kunde inte nå databasen
-    void closeAccount(DTOAccount account);
+    void closeAccount(DTOAccount account) throws DatabaseConnectionException, NoSuchCustomerException;
 
     // Positiv parameter -> insättning, negativ parameter -> uttag
-    // För lite pengar, kontot finns inte, kunde inte nå databasen
-    DTOAccount transact(DTOAccount account, double netBalance);
+    DTOAccount transact(int accountId, double netBalance) throws DatabaseConnectionException, NoSuchAccountException, InsufficientFundsException;
 
-    // Ogiltig ränta, kontot finns inte, kunde inte nå databasen
-    DTOAccount setAccountInterestRate(DTOAccount account, double newInterestRate);
+    // Ogiltig ränta
+    DTOAccount setAccountInterestRate(int accountId, double newInterestRate) throws DatabaseConnectionException, NoSuchAccountException;
 
-    // Ogiltiga fält, kunden finns inte, kunde inte nå databasen
-    DTOLoan approveLoan(); // TODO Parametrar för nya fält
+    // Ogiltiga fält
+    DTOLoan approveLoan() throws DatabaseConnectionException, NoSuchCustomerException; // TODO Parametrar för nya fält
 
-    // Ogiltiga fält, lånet finns inte, kunde inte nå databasen
-    DTOLoan updateLoan(DTOLoan loan); // TODO Parametrar för ändrade fält
+    // Ogiltiga fält, lånet finns inte
+    DTOLoan updateLoan(DTOLoan loan) throws DatabaseConnectionException; // TODO Parametrar för ändrade fält
 
-    // Inga kunder, kunde inte nå databasen
-    Collection<DTOCustomer> getCustomerData();
+    Collection<DTOCustomer> getCustomerData() throws DatabaseConnectionException;
 
-    // Inga konton, kunden finns inte, kunde inte nå databasen
-    Collection<DTOAccount> getAccountData(DTOCustomer customer);
+    Collection<DTOAccount> getAccountData(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException;
 
-    // Inga lån, kunden finns inte, kunde inte nå databasen
-    Collection<DTOLoan> getLoanData(DTOCustomer customer);
+    Collection<DTOLoan> getLoanData(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException;
 
-    // Inga transaktioner, kontot finns inte, kunde inte nå databasen
-    Collection<DTOTransaction> getTransactionHistory(DTOAccount account); // Per kund? För alla?
+    Collection<DTOTransaction> getTransactionHistory(DTOAccount account) throws DatabaseConnectionException, NoSuchAccountException; // Per kund? För alla?
 }
