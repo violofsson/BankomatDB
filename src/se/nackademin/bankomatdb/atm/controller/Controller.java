@@ -1,6 +1,8 @@
 package se.nackademin.bankomatdb.atm.controller;
 
 import se.nackademin.bankomatdb.*;
+import se.nackademin.bankomatdb.atm.AlreadyLoggedInException;
+import se.nackademin.bankomatdb.atm.NotLoggedInException;
 import se.nackademin.bankomatdb.atm.repository.JRepository;
 import se.nackademin.bankomatdb.model.DTOAccount;
 import se.nackademin.bankomatdb.model.DTOCustomer;
@@ -14,17 +16,21 @@ public class Controller {
     private ATMRepository repository;
     private DTOCustomer currentCustomer;
 
-    public Controller() {
+    public Controller() throws DatabaseConnectionException {
         repository = new JRepository();
     }
 
     // TODO Kasta lämplig exception om kunden inte är initialiserad
     // Inte inloggad
-    public DTOCustomer getCurrentCustomer() {
-        return currentCustomer;
+    public DTOCustomer getCurrentCustomer() throws NotLoggedInException {
+        if (currentCustomer != null) {
+            return currentCustomer;
+        } else {
+            throw new NotLoggedInException("No customer is defined");
+        }
     }
 
-    public Collection<DTOAccount> getCustomerAccounts() throws DatabaseConnectionException, NoSuchCustomerException {
+    public Collection<DTOAccount> getCustomerAccounts() throws DatabaseConnectionException, NotLoggedInException {
         return repository.getCustomerAccounts(getCurrentCustomer().getCustomerId());
     }
 
@@ -32,14 +38,13 @@ public class Controller {
         return repository.getTransactionHistory(account.getAccountId());
     }
 
-    public Collection<DTOLoan> getCustomerLoans() throws DatabaseConnectionException, NoSuchCustomerException {
+    public Collection<DTOLoan> getCustomerLoans() throws DatabaseConnectionException, NotLoggedInException {
         return repository.getCustomerLoans(getCurrentCustomer().getCustomerId());
     }
 
-    // Redan inloggad
     public boolean login(String id, String pin) throws DatabaseConnectionException, AlreadyLoggedInException {
         if (currentCustomer != null) {
-            throw new AlreadyLoggedInException();
+            throw new AlreadyLoggedInException("Unable to log in: already logged in");
         }
         try {
             currentCustomer = repository.login(id, pin);
@@ -50,9 +55,12 @@ public class Controller {
         }
     }
 
-    // Inte inloggad
-    public void logout() {
-        currentCustomer = null;
+    public void logout()  throws NotLoggedInException {
+        if (currentCustomer != null) {
+            currentCustomer = null;
+        } else {
+            throw new NotLoggedInException("Unable to log out: nobody's logged in");
+        }
     }
 
     // Returnerar true oom uttaget lyckades, precis som i Repository

@@ -1,4 +1,4 @@
-package se.nackademin.bankomatdb.atm.controller;
+package se.nackademin.bankomatdb.atm;
 
 public class AlreadyLoggedInException extends Exception {
     public AlreadyLoggedInException() {

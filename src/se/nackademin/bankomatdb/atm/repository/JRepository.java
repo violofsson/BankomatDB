@@ -7,8 +7,6 @@ import se.nackademin.bankomatdb.model.DTOLoan;
 import se.nackademin.bankomatdb.model.DTOTransaction;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,16 +17,12 @@ import java.util.Properties;
 public class JRepository implements ATMRepository {
     Properties connectionProperties = new Properties();
 
-    public JRepository() {
+    public JRepository() throws DatabaseConnectionException {
         try {
             connectionProperties.load(new FileInputStream("src/se/nackademin/JConnection.properties"));
             Class.forName("com.mysql.jdbc.Driver");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new DatabaseConnectionException(e);
         }
     }
 
@@ -45,14 +39,20 @@ public class JRepository implements ATMRepository {
                 accounts.add(new DTOAccount(rs.getInt("id"), customerId, rs.getDouble("balance"), rs.getDouble("interest")));
             }
         } catch (SQLException e) {
-            throw new DatabaseConnectionException(e);
+            throw new DatabaseConnectionException("Failed to load account data", e);
         }
         return accounts;
     }
 
     @Override
     public List<DTOLoan> getCustomerLoans(int customerId) throws DatabaseConnectionException {
-        return null;
+        List<DTOLoan> loans = new ArrayList<>();
+        try (Connection conn = getConnection()) {
+            // Hämta låndata när det fixats
+        } catch (SQLException e) {
+            throw new DatabaseConnectionException("Failed to load loan data", e);
+        }
+        return loans;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class JRepository implements ATMRepository {
                         rs.getTimestamp("transaction_time").toLocalDateTime()));
             }
         } catch (SQLException e) {
-            throw new DatabaseConnectionException(e);
+            throw new DatabaseConnectionException("Failed to load transaction data", e);
         }
         return transactions;
     }

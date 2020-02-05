@@ -17,7 +17,7 @@ public interface Repository {
     // TODO Kasta relevanta exceptions när en operation misslyckas
 
     // Ogiltiga fält
-    DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException; // TODO Parametrar för nya fält - eller kundobjekt?
+    DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException;
 
     // Ogiltiga fält
     DTOCustomer updateCustomer(DTOCustomer customer) throws DatabaseConnectionException; // TODO Parametrar för uppdaterade fält
@@ -25,7 +25,7 @@ public interface Repository {
     void deleteCustomer(int customerId) throws DatabaseConnectionException, NoSuchCustomerException;
 
     // Ogltiga fält
-    DTOAccount openAccount(int customerId, double interestRate) throws DatabaseConnectionException, NoSuchCustomerException; // TODO Parametrar för nya fält
+    DTOAccount openAccount(int customerId, double interestRate) throws DatabaseConnectionException, NoSuchCustomerException;
 
     void closeAccount(int accountId) throws DatabaseConnectionException, NoSuchCustomerException;
 
