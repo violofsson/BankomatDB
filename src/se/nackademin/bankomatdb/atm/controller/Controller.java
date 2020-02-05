@@ -1,6 +1,7 @@
 package se.nackademin.bankomatdb.atm.controller;
 
 import se.nackademin.bankomatdb.*;
+import se.nackademin.bankomatdb.atm.repository.JRepository;
 import se.nackademin.bankomatdb.model.DTOAccount;
 import se.nackademin.bankomatdb.model.DTOCustomer;
 import se.nackademin.bankomatdb.atm.repository.ATMRepository;
@@ -14,7 +15,7 @@ public class Controller {
     private DTOCustomer currentCustomer;
 
     public Controller() {
-        // Intialisera repository
+        repository = new JRepository();
     }
 
     // TODO Kasta lämplig exception om kunden inte är initialiserad
