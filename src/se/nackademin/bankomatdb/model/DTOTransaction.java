@@ -6,11 +6,13 @@ import java.time.LocalDateTime;
 public final class DTOTransaction {
     // Ska konto och ev kund hanteras som lagrat id eller konstruktorparameterobjekt?
     private final int id;
+    private final int accountId;
     private final double netBalance;
     private final LocalDateTime transactionTime;
 
-    public DTOTransaction(int id, double netBalance, LocalDateTime transactionTime) {
+    public DTOTransaction(int id, int accountId, double netBalance, LocalDateTime transactionTime) {
         this.id = id;
+        this.accountId = accountId;
         this.netBalance = netBalance;
         this.transactionTime = transactionTime;
     }
