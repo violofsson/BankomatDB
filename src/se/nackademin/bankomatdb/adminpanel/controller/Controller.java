@@ -1,9 +1,6 @@
 package se.nackademin.bankomatdb.adminpanel.controller;
 
-import se.nackademin.bankomatdb.DatabaseConnectionException;
-import se.nackademin.bankomatdb.InsufficientFundsException;
-import se.nackademin.bankomatdb.NoSuchAccountException;
-import se.nackademin.bankomatdb.NoSuchCustomerException;
+import se.nackademin.bankomatdb.*;
 import se.nackademin.bankomatdb.adminpanel.repository.Repository;
 import se.nackademin.bankomatdb.model.DTOAccount;
 import se.nackademin.bankomatdb.model.DTOCustomer;
@@ -62,11 +59,11 @@ public class Controller {
         repository.setAccountInterestRate(account.getAccountId(), newRate);
     }
 
-    void approveLoan() {
+    void approveLoan(DTOLoan loan) {
 
     }
 
-    void updateLoan(DTOLoan loan) throws DatabaseConnectionException {
+    void updateLoan(DTOLoan loan) throws DatabaseConnectionException, NoSuchLoanException {
         repository.updateLoan(loan);
     }
 

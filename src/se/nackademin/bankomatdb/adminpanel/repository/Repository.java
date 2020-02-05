@@ -1,9 +1,6 @@
 package se.nackademin.bankomatdb.adminpanel.repository;
 
-import se.nackademin.bankomatdb.DatabaseConnectionException;
-import se.nackademin.bankomatdb.InsufficientFundsException;
-import se.nackademin.bankomatdb.NoSuchAccountException;
-import se.nackademin.bankomatdb.NoSuchCustomerException;
+import se.nackademin.bankomatdb.*;
 import se.nackademin.bankomatdb.model.DTOAccount;
 import se.nackademin.bankomatdb.model.DTOCustomer;
 import se.nackademin.bankomatdb.model.DTOLoan;
@@ -40,8 +37,8 @@ public interface Repository {
     // Ogiltiga fält
     DTOLoan approveLoan(int customerId) throws DatabaseConnectionException, NoSuchCustomerException; // TODO Parametrar för nya fält
 
-    // Ogiltiga fält, lånet finns inte
-    DTOLoan updateLoan(DTOLoan loan) throws DatabaseConnectionException; // TODO Parametrar för ändrade fält
+    // Ogiltiga fält
+    DTOLoan updateLoan(DTOLoan loan) throws DatabaseConnectionException, NoSuchLoanException; // TODO Parametrar för ändrade fält
 
     Collection<DTOCustomer> getCustomerData() throws DatabaseConnectionException;
 
