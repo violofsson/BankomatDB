@@ -9,7 +9,7 @@ import se.nackademin.bankomatdb.model.DTOTransaction;
 import java.util.List;
 
 // Tanken är att bankomaten hämtar ett kundobjekt vid inloggning och återanvänder det
-// TODO Ange eventuella exceptions
+// TODO Kontrollera exceptions
 public interface ATMRepository {
     List<DTOAccount> getCustomerAccounts(int customerId) throws DatabaseConnectionException;
 

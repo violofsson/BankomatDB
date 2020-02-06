@@ -1,6 +1,7 @@
 package se.nackademin.bankomatdb.adminpanel.controller;
 
 import se.nackademin.bankomatdb.*;
+import se.nackademin.bankomatdb.adminpanel.repository.JRepository;
 import se.nackademin.bankomatdb.adminpanel.repository.Repository;
 import se.nackademin.bankomatdb.model.DTOAccount;
 import se.nackademin.bankomatdb.model.DTOCustomer;
@@ -16,11 +17,15 @@ import java.util.stream.Collectors;
 public class Controller {
     Repository repository;
 
+    Controller() throws DatabaseConnectionException {
+        this.repository = new JRepository();
+    }
+
     DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException {
         return repository.addCustomer(name, personalId, pin);
     }
 
-    DTOCustomer updateCustomer(DTOCustomer customer) throws DatabaseConnectionException {
+    DTOCustomer updateCustomer(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException {
         return repository.updateCustomer(customer);
     }
 

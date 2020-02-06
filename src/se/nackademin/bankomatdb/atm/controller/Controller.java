@@ -20,8 +20,6 @@ public class Controller {
         repository = new JRepository();
     }
 
-    // TODO Kasta lämplig exception om kunden inte är initialiserad
-    // Inte inloggad
     public DTOCustomer getCurrentCustomer() throws NotLoggedInException {
         if (currentCustomer != null) {
             return currentCustomer;
@@ -65,6 +63,9 @@ public class Controller {
 
     // Returnerar true oom uttaget lyckades, precis som i Repository
     public boolean withdraw(DTOAccount account, int amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchAccountException {
+        if (amount > account.getBalance()) {
+            throw new InsufficientFundsException();
+        }
         return repository.withdraw(account.getAccountId(), amount);
     }
 }

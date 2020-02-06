@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Properties;
 
 // Baserat på Jaaneks databas
-// TODO Kontrollera att alla metoder fungerar
 public class JRepository implements ATMRepository {
     Properties connectionProperties = new Properties();
 
@@ -44,6 +43,7 @@ public class JRepository implements ATMRepository {
         return accounts;
     }
 
+    // TODO
     @Override
     public List<DTOLoan> getCustomerLoans(int customerId) throws DatabaseConnectionException {
         List<DTOLoan> loans = new ArrayList<>();
@@ -95,6 +95,7 @@ public class JRepository implements ATMRepository {
         }
     }
 
+    // TODO
     @Override
     public boolean withdraw(int accountId, int amount) throws DatabaseConnectionException, InsufficientFundsException, NoSuchAccountException {
         return false;

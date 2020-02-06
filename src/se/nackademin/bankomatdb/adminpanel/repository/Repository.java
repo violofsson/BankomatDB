@@ -11,16 +11,16 @@ import java.util.Collection;
 
 // TODO
 public interface Repository {
-    // Obs: upserts returnerar skapat/uppdaterat objekt, vilket kanske eller kanske inte
-    // är detsamma som eventuell inparameter
-    // TODO Bestäm en regel för samma/olika objekt och följ konsekvent
+    // Obs: upserts returnerar skapat/uppdaterat objekt; för att vara konsekvent
+    // rekommenderas att eventuell lagring ersätter det gamla objektet med det
+    // nya på något lämpligt sätt
     // TODO Kasta relevanta exceptions när en operation misslyckas
 
     // Ogiltiga fält
     DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException;
 
     // Ogiltiga fält
-    DTOCustomer updateCustomer(DTOCustomer customer) throws DatabaseConnectionException; // TODO Parametrar för uppdaterade fält
+    DTOCustomer updateCustomer(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException; // TODO Parametrar för uppdaterade fält
 
     boolean deleteCustomer(int customerId) throws DatabaseConnectionException;
 

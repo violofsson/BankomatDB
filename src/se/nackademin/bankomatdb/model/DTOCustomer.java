@@ -22,6 +22,14 @@ public final class DTOCustomer {
         return name;
     }
 
+    public String getPersonalId() {
+        return personalId;
+    }
+
+    public String getPin() {
+        return pin;
+    }
+
     public DTOCustomer updated(String newName, String newPin) {
         return new DTOCustomer(id, (newName != null) ? newName : name, personalId, (newPin != null) ? newPin : pin);
     }

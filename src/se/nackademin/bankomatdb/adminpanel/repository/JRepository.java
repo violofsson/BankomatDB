@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Properties;
 
 // Baserat på Jaaneks databas
-// TODO
 public class JRepository implements Repository {
     Properties connectionProperties = new Properties();
 
@@ -50,8 +49,24 @@ public class JRepository implements Repository {
     }
 
     @Override
-    public DTOCustomer updateCustomer(DTOCustomer customer) throws DatabaseConnectionException {
-        return null;
+    public DTOCustomer updateCustomer(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException {
+        String updateQuery = "UPDATE Kund SET Namn = ?, Personnummer = ?, Pin = ? WHERE Kundnummer = ? ";
+        try (Connection conn = getConnection();
+        PreparedStatement ps = conn.prepareStatement(updateQuery)) {
+            ps.setString(1, customer.getName());
+            ps.setString(2, customer.getPersonalId());
+            ps.setString(3, customer.getPin());
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows > 0) {
+                ResultSet rs = ps.getGeneratedKeys();
+                rs.next();
+                return new DTOCustomer(rs.getInt("Kundnummer"), rs.getString("Namn"), rs.getString("Personnummer"), rs.getString("Pin"));
+            } else {
+                throw new NoSuchCustomerException("Failed to update customer with id" + customer.getCustomerId());
+            }
+        } catch (SQLException e) {
+            throw new DatabaseConnectionException(e);
+        }
     }
 
     @Override
@@ -73,7 +88,7 @@ public class JRepository implements Repository {
                 rs.next(); // Garanterat då affectedRows > 0
                 return new DTOAccount(rs.getInt("Kontonummer"), rs.getInt("Kund"), rs.getDouble("Saldo"), rs.getDouble("Räntesats"));
             } else {
-                return null;
+                return null; // TODO
             }
         } catch (SQLIntegrityConstraintViolationException e) {
             throw new NoSuchCustomerException(e);
@@ -87,11 +102,13 @@ public class JRepository implements Repository {
         return deleteEntityById(accountId, "DELETE FROM Konto WHERE Konto.Kontonummer = ?");
     }
 
+    // TODO
     @Override
     public DTOAccount deposit(int accountId, double amount) throws DatabaseConnectionException, NoSuchAccountException {
         return null;
     }
 
+    // TODO
     @Override
     public DTOAccount withdraw(int accountId, double amount) throws DatabaseConnectionException, NoSuchAccountException, InsufficientFundsException {
         return null;
@@ -99,14 +116,30 @@ public class JRepository implements Repository {
 
     @Override
     public DTOAccount setAccountInterestRate(int accountId, double newInterestRate) throws DatabaseConnectionException, NoSuchAccountException {
-        return null;
+        String updateQuery = "UPDATE Konto SET Räntesats = ? WHERE Kontonummer = ?";
+        try (Connection conn = getConnection();
+        PreparedStatement ps = conn.prepareStatement(updateQuery)) {
+            ps.setDouble(1, newInterestRate);
+            ps.setInt(2, accountId);
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows > 0) {
+                ResultSet rs = ps.getGeneratedKeys();
+                return new DTOAccount(rs.getInt("Kontonummer"), rs.getInt("Kund"), rs.getDouble("Saldo"), rs.getDouble("Räntesats"));
+            } else {
+                throw new NoSuchAccountException("Failed to update account " + accountId);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseConnectionException(e);
+        }
     }
 
+    // TODO
     @Override
     public DTOLoan approveLoan(int customerId, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, NoSuchCustomerException {
         return null;
     }
 
+    // TODO
     @Override
     public DTOLoan updateLoan(DTOLoan loan) throws DatabaseConnectionException, NoSuchLoanException {
         return null;
