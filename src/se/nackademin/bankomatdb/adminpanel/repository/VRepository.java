@@ -27,7 +27,7 @@ public class VRepository implements Repository {
     }
 
     @Override
-    public DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException {
+    public DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException, InvalidInsertException {
         String openStatement = "INSERT INTO customer_data (name, personal_id, pin) VALUES (?, ?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(openStatement, Statement.RETURN_GENERATED_KEYS)) {
@@ -38,9 +38,9 @@ public class VRepository implements Repository {
             if (affectedRows > 0) {
                 ResultSet rs = ps.getGeneratedKeys();
                 rs.next(); // Garanterat då affectedRows > 0
-                return new DTOCustomer(rs.getInt("customer_id"), rs.getString("name"), rs.getString("personal_id"), rs.getString("pin"));
+                return new DTOCustomer(rs.getInt(1), name, personalId, pin);
             } else {
-                return null; // TODO
+                throw new InvalidInsertException("Failed to insert new customer into database");
             }
         } catch (SQLException e) {
             throw new DatabaseConnectionException(e);
@@ -57,9 +57,7 @@ public class VRepository implements Repository {
             ps.setString(3, customer.getPin());
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
-                ResultSet rs = ps.getGeneratedKeys();
-                rs.next();
-                return new DTOCustomer(rs.getInt("customer_id"), rs.getString("name"), rs.getString("personal_id"), rs.getString("pin"));
+                return customer; // Om uppdatering lyckades får vi tillbaka samma data
             } else {
                 throw new NoSuchCustomerException("Failed to update customer with id" + customer.getCustomerId());
             }
@@ -74,20 +72,20 @@ public class VRepository implements Repository {
     }
 
     @Override
-    public DTOAccount openAccount(int customerId, double interestRate) throws DatabaseConnectionException, NoSuchCustomerException {
+    public DTOAccount openAccount(int customerId, double initialBalance, double interestRate) throws DatabaseConnectionException, InvalidInsertException, NoSuchCustomerException {
         String openStatement = "INSERT INTO account_data (owner_id, balance, interest_rate) VALUES (?, ?, ?) ";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(openStatement, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, customerId);
-            ps.setDouble(2, 0);
+            ps.setDouble(2, initialBalance);
             ps.setDouble(3, interestRate);
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
                 ResultSet rs = ps.getGeneratedKeys();
                 rs.next(); // Garanterat då affectedRows > 0
-                return new DTOAccount(rs.getInt("id"), rs.getInt("owner_id"), rs.getDouble("balance"), rs.getDouble("interest_rate"));
+                return new DTOAccount(rs.getInt(1), customerId, initialBalance, interestRate);
             } else {
-                return null; // TODO
+                throw new InvalidInsertException("Failed to insert new account into database");
             }
         } catch (SQLIntegrityConstraintViolationException e) {
             throw new NoSuchCustomerException(e);
@@ -123,7 +121,9 @@ public class VRepository implements Repository {
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
                 ResultSet rs = ps.getGeneratedKeys();
-                return new DTOAccount(rs.getInt("Kontonummer"), rs.getInt("Kund"), rs.getDouble("Saldo"), rs.getDouble("Räntesats"));
+                rs.next();
+                // TODO Korrigera
+                return new DTOAccount(rs.getInt(1), rs.getInt("owner_id"), rs.getDouble("balance"), newInterestRate);
             } else {
                 throw new NoSuchAccountException("Failed to update account " + accountId);
             }
@@ -133,26 +133,28 @@ public class VRepository implements Repository {
     }
 
     @Override
-    public DTOLoan approveLoan(int customerId, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, NoSuchCustomerException {
+    public DTOLoan approveLoan(int customerId, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, InvalidInsertException, NoSuchCustomerException {
         String insertQuery = "INSERT INTO loan_data (debtor_id, original_amount, granted, deadline, interest_rate) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(insertQuery)) {
+            LocalDate granted = LocalDate.now();
             ps.setInt(1, customerId);
             ps.setDouble(2, sum);
-            ps.setDate(3, Date.valueOf(LocalDate.now()));
+            ps.setDate(3, Date.valueOf(granted));
             ps.setDate(4, Date.valueOf(deadline));
             ps.setDouble(5, interestRate);
             int affextedRows = ps.executeUpdate();
             if (affextedRows > 0) {
                 ResultSet rs = ps.getGeneratedKeys();
-                return new DTOLoan(rs.getInt("id"),
-                        rs.getInt("debtor_id"),
-                        rs.getDouble("original_amount"),
-                        rs.getDouble("interest_rate"),
-                        rs.getDate("granted").toLocalDate(),
-                        rs.getDate("deadline").toLocalDate());
+                rs.next();
+                return new DTOLoan(rs.getInt(1),
+                        customerId,
+                        sum,
+                        interestRate,
+                        granted,
+                        deadline);
             } else {
-                return null; // TODO
+                throw new InvalidInsertException("Failed to insert new loan into database");
             }
         } catch (SQLIntegrityConstraintViolationException e) {
             throw new NoSuchCustomerException(e);
@@ -171,13 +173,7 @@ public class VRepository implements Repository {
             ps.setInt(3, loan.getLoanId());
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
-                ResultSet rs = ps.getGeneratedKeys();
-                return new DTOLoan(rs.getInt("id"),
-                        rs.getInt("debtor_id"),
-                        rs.getDouble("original_amount"),
-                        rs.getDouble("interest_rate"),
-                        rs.getDate("granted").toLocalDate(),
-                        rs.getDate("deadline").toLocalDate());
+                return loan;
             } else {
                 throw new NoSuchLoanException();
             }

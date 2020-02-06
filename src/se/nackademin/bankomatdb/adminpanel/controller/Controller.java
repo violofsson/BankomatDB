@@ -21,7 +21,7 @@ public class Controller {
         this.repository = new VRepository();
     }
 
-    DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException {
+    DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException, InvalidInsertException {
         return repository.addCustomer(name, personalId, pin);
     }
 
@@ -33,8 +33,8 @@ public class Controller {
         return repository.deleteCustomer(customer.getCustomerId());
     }
 
-    DTOAccount openAccount(DTOCustomer customer, double interestRate) throws DatabaseConnectionException, NoSuchCustomerException {
-        return repository.openAccount(customer.getCustomerId(), interestRate);
+    DTOAccount openAccount(DTOCustomer customer, double interestRate) throws DatabaseConnectionException, NoSuchCustomerException, InvalidInsertException {
+        return repository.openAccount(customer.getCustomerId(), 0, interestRate);
     }
 
     boolean closeAccount(DTOAccount account) throws DatabaseConnectionException {
@@ -57,7 +57,7 @@ public class Controller {
         return repository.setAccountInterestRate(account.getAccountId(), newRate);
     }
 
-    DTOLoan approveLoan(DTOCustomer customer, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, NoSuchCustomerException {
+    DTOLoan approveLoan(DTOCustomer customer, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, NoSuchCustomerException, InvalidInsertException {
         return repository.approveLoan(customer.getCustomerId(), sum, interestRate, deadline);
     }
 

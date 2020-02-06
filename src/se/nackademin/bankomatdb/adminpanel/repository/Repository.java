@@ -17,7 +17,7 @@ public interface Repository {
     // TODO Kasta relevanta exceptions när en operation misslyckas
 
     // Ogiltiga fält
-    DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException;
+    DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException, InvalidInsertException;
 
     // Ogiltiga fält
     DTOCustomer updateCustomer(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException; // TODO Parametrar för uppdaterade fält
@@ -25,7 +25,7 @@ public interface Repository {
     boolean deleteCustomer(int customerId) throws DatabaseConnectionException;
 
     // Ogltiga fält
-    DTOAccount openAccount(int customerId, double interestRate) throws DatabaseConnectionException, NoSuchCustomerException;
+    DTOAccount openAccount(int customerId, double initialBalance, double interestRate) throws DatabaseConnectionException, NoSuchCustomerException, InvalidInsertException;
 
     boolean closeAccount(int accountId) throws DatabaseConnectionException;
 
@@ -37,7 +37,7 @@ public interface Repository {
     DTOAccount setAccountInterestRate(int accountId, double newInterestRate) throws DatabaseConnectionException, NoSuchAccountException;
 
     // Ogiltiga fält
-    DTOLoan approveLoan(int customerId, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, NoSuchCustomerException; // TODO Parametrar för nya fält
+    DTOLoan approveLoan(int customerId, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, NoSuchCustomerException, InvalidInsertException; // TODO Parametrar för nya fält
 
     // Ogiltiga fält
     DTOLoan updateLoan(DTOLoan loan) throws DatabaseConnectionException, NoSuchLoanException; // TODO Parametrar för ändrade fält
