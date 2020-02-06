@@ -31,7 +31,7 @@ public class JRepository implements Repository {
     public DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException {
         String openStatement = "INSERT INTO Kund (Namn, Personnummer, Pin) VALUES (?, ?, ?)";
         try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(openStatement)) {
+             PreparedStatement ps = conn.prepareStatement(openStatement, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, name);
             ps.setString(2, personalId);
             ps.setString(3, pin);
@@ -52,7 +52,7 @@ public class JRepository implements Repository {
     public DTOCustomer updateCustomer(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException {
         String updateQuery = "UPDATE Kund SET Namn = ?, Personnummer = ?, Pin = ? WHERE Kundnummer = ? ";
         try (Connection conn = getConnection();
-        PreparedStatement ps = conn.prepareStatement(updateQuery)) {
+             PreparedStatement ps = conn.prepareStatement(updateQuery, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, customer.getName());
             ps.setString(2, customer.getPersonalId());
             ps.setString(3, customer.getPin());
@@ -78,7 +78,7 @@ public class JRepository implements Repository {
     public DTOAccount openAccount(int customerId, double interestRate) throws DatabaseConnectionException, NoSuchCustomerException {
         String openStatement = "INSERT INTO Konto (Kund, Saldo, Räntesats) VALUES (?, ?, ?) ";
         try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(openStatement)) {
+             PreparedStatement ps = conn.prepareStatement(openStatement, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, customerId);
             ps.setDouble(2, 0);
             ps.setDouble(3, interestRate);
@@ -118,7 +118,7 @@ public class JRepository implements Repository {
     public DTOAccount setAccountInterestRate(int accountId, double newInterestRate) throws DatabaseConnectionException, NoSuchAccountException {
         String updateQuery = "UPDATE Konto SET Räntesats = ? WHERE Kontonummer = ?";
         try (Connection conn = getConnection();
-        PreparedStatement ps = conn.prepareStatement(updateQuery)) {
+             PreparedStatement ps = conn.prepareStatement(updateQuery, Statement.RETURN_GENERATED_KEYS)) {
             ps.setDouble(1, newInterestRate);
             ps.setInt(2, accountId);
             int affectedRows = ps.executeUpdate();
@@ -147,10 +147,10 @@ public class JRepository implements Repository {
 
     @Override
     public Collection<DTOCustomer> getCustomerData() throws DatabaseConnectionException {
+        String customerQuery = "SELECT Kund.Kundnummer AS id, Kund.Namn AS customer_name, Kund.Personnummer AS personal_id, Kund.Pin AS pin FROM Kund";
         List<DTOCustomer> customers = new ArrayList<>();
-        try (Connection conn = getConnection()) {
-            String customerQuery = "SELECT Kund.Kundnummer AS id, Kund.Namn AS customer_name, Kund.Personnummer AS personal_id, Kund.Pin AS pin FROM Kund";
-            PreparedStatement ps = conn.prepareStatement(customerQuery);
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(customerQuery)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 customers.add(new DTOCustomer(rs.getInt("id"), rs.getString("customer_name"), rs.getString("personal_id"), rs.getString("pin")));
@@ -164,11 +164,11 @@ public class JRepository implements Repository {
     @Override
     public Collection<DTOAccount> getAccountData(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException {
         int customerId = customer.getCustomerId();
+        String accountQuery = "SELECT Konto.Kontonummer AS id, Konto.Saldo AS balance, Konto.Räntesats AS interest " +
+                "FROM Konto WHERE Konto.Kund = ?";
         List<DTOAccount> accounts = new ArrayList<>();
-        try (Connection conn = getConnection()) {
-            String accountQuery = "SELECT Konto.Kontonummer AS id, Konto.Saldo AS balance, Konto.Räntesats AS interest " +
-                    "FROM Konto WHERE Konto.Kund = ?";
-            PreparedStatement ps = conn.prepareStatement(accountQuery);
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(accountQuery)) {
             ps.setInt(1, customerId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -195,13 +195,13 @@ public class JRepository implements Repository {
     @Override
     public Collection<DTOTransaction> getTransactionHistory(DTOAccount account) throws DatabaseConnectionException, NoSuchAccountException {
         int accountId = account.getAccountId();
+        String transactionQuery = "SELECT Transaktion.TransaktionID AS id, " +
+                "Transaktion.Saldoförändring AS net_balance, " +
+                "Transaktion.Tidpunkt AS transaction_time " +
+                "FROM Transaktion WHERE Transaktion.Konto = ?";
         List<DTOTransaction> transactions = new ArrayList<>();
-        try (Connection conn = getConnection()) {
-            String transactionQuery = "SELECT Transaktion.TransaktionID AS id, " +
-                    "Transaktion.Saldoförändring AS net_balance, " +
-                    "Transaktion.Tidpunkt AS transaction_time " +
-                    "FROM Transaktion WHERE Transaktion.Konto = ?";
-            PreparedStatement ps = conn.prepareStatement(transactionQuery);
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(transactionQuery)) {
             ps.setInt(1, accountId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
