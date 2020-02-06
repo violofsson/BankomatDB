@@ -45,9 +45,20 @@ public class VRepository implements ATMRepository {
     // TODO
     @Override
     public List<DTOLoan> getCustomerLoans(int customerId) throws DatabaseConnectionException {
+        String loanQuery = "SELECT id, original_amount, granted, interest_rate FROM loan_data WHERE debtor_id = ?";
         List<DTOLoan> loans = new ArrayList<>();
-        try (Connection conn = getConnection()) {
-            // Hämta låndata när det fixats
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(loanQuery)) {
+            ps.setInt(1, customerId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                loans.add(new DTOLoan(rs.getInt("id"),
+                        customerId,
+                        rs.getDouble("original_amount"),
+                        rs.getDouble("interest_rate"),
+                        rs.getDate("granted").toLocalDate(),
+                        rs.getDate("deadline").toLocalDate()));
+            }
         } catch (SQLException e) {
             throw new DatabaseConnectionException("Failed to load loan data", e);
         }

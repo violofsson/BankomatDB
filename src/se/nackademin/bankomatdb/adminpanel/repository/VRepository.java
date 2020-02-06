@@ -40,7 +40,7 @@ public class VRepository implements Repository {
                 rs.next(); // Garanterat då affectedRows > 0
                 return new DTOCustomer(rs.getInt("customer_id"), rs.getString("name"), rs.getString("personal_id"), rs.getString("pin"));
             } else {
-                return null;
+                return null; // TODO
             }
         } catch (SQLException e) {
             throw new DatabaseConnectionException(e);
@@ -98,7 +98,7 @@ public class VRepository implements Repository {
 
     @Override
     public boolean closeAccount(int accountId) throws DatabaseConnectionException {
-        return deleteEntityById(accountId, "DELETE FROM customer_data WHERE customer_id = ?");
+        return deleteEntityById(accountId, "DELETE FROM account_data WHERE account_id = ?");
     }
 
     // TODO
@@ -132,16 +132,58 @@ public class VRepository implements Repository {
         }
     }
 
-    // TODO
     @Override
     public DTOLoan approveLoan(int customerId, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, NoSuchCustomerException {
-        return null;
+        String insertQuery = "INSERT INTO loan_data (debtor_id, original_amount, granted, deadline, interest_rate) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(insertQuery)) {
+            ps.setInt(1, customerId);
+            ps.setDouble(2, sum);
+            ps.setDate(3, Date.valueOf(LocalDate.now()));
+            ps.setDate(4, Date.valueOf(deadline));
+            ps.setDouble(5, interestRate);
+            int affextedRows = ps.executeUpdate();
+            if (affextedRows > 0) {
+                ResultSet rs = ps.getGeneratedKeys();
+                return new DTOLoan(rs.getInt("id"),
+                        rs.getInt("debtor_id"),
+                        rs.getDouble("original_amount"),
+                        rs.getDouble("interest_rate"),
+                        rs.getDate("granted").toLocalDate(),
+                        rs.getDate("deadline").toLocalDate());
+            } else {
+                return null; // TODO
+            }
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new NoSuchCustomerException(e);
+        } catch (SQLException e) {
+            throw new DatabaseConnectionException("Failed to approve new loan", e);
+        }
     }
 
-    // TODO
     @Override
     public DTOLoan updateLoan(DTOLoan loan) throws DatabaseConnectionException, NoSuchLoanException {
-        return null;
+        String updateQuery = "UPDATE loan_data SET interest_rate = ?, deadline = ? WHERE id = ?";
+        try (Connection coon = getConnection();
+             PreparedStatement ps = coon.prepareStatement(updateQuery)) {
+            ps.setDouble(1, loan.getInterestRate());
+            ps.setDate(2, Date.valueOf(loan.getPaymentDeadline()));
+            ps.setInt(3, loan.getLoanId());
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows > 0) {
+                ResultSet rs = ps.getGeneratedKeys();
+                return new DTOLoan(rs.getInt("id"),
+                        rs.getInt("debtor_id"),
+                        rs.getDouble("original_amount"),
+                        rs.getDouble("interest_rate"),
+                        rs.getDate("granted").toLocalDate(),
+                        rs.getDate("deadline").toLocalDate());
+            } else {
+                throw new NoSuchLoanException();
+            }
+        } catch (SQLException e) {
+            throw new DatabaseConnectionException(e);
+        }
     }
 
     @Override
@@ -182,9 +224,20 @@ public class VRepository implements Repository {
     @Override
     public Collection<DTOLoan> getLoanData(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException {
         int customerId = customer.getCustomerId();
+        String loanQuery = "SELECT id, original_amount, granted, interest_rate FROM loan_data WHERE debtor_id = ?";
         List<DTOLoan> loans = new ArrayList<>();
-        try (Connection conn = getConnection()) {
-            // Hämta låndata när det fixats
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(loanQuery)) {
+            ps.setInt(1, customerId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                loans.add(new DTOLoan(rs.getInt("id"),
+                        customerId,
+                        rs.getDouble("original_amount"),
+                        rs.getDouble("interest_rate"),
+                        rs.getDate("granted").toLocalDate(),
+                        rs.getDate("deadline").toLocalDate()));
+            }
         } catch (SQLException e) {
             throw new DatabaseConnectionException("Failed to load loan data", e);
         }
