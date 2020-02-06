@@ -1,7 +1,7 @@
 package se.nackademin.bankomatdb.adminpanel.controller;
 
 import se.nackademin.bankomatdb.*;
-import se.nackademin.bankomatdb.adminpanel.repository.JRepository;
+import se.nackademin.bankomatdb.adminpanel.repository.VRepository;
 import se.nackademin.bankomatdb.adminpanel.repository.Repository;
 import se.nackademin.bankomatdb.model.DTOAccount;
 import se.nackademin.bankomatdb.model.DTOCustomer;
@@ -18,7 +18,7 @@ public class Controller {
     Repository repository;
 
     Controller() throws DatabaseConnectionException {
-        this.repository = new JRepository();
+        this.repository = new VRepository();
     }
 
     DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException {

@@ -12,13 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-// Baserat på Jaaneks databas
-public class JRepository implements ATMRepository {
+public class VRepository implements ATMRepository {
     Properties connectionProperties = new Properties();
 
-    public JRepository() throws DatabaseConnectionException {
+    public VRepository() throws DatabaseConnectionException {
         try {
-            connectionProperties.load(new FileInputStream("src/se/nackademin/JConnection.properties"));
+            connectionProperties.load(new FileInputStream("src/se/nackademin/VConnection.properties"));
             Class.forName("com.mysql.jdbc.Driver");
         } catch (Exception e) {
             throw new DatabaseConnectionException(e);
@@ -28,14 +27,14 @@ public class JRepository implements ATMRepository {
     @Override
     public List<DTOAccount> getCustomerAccounts(int customerId) throws DatabaseConnectionException {
         List<DTOAccount> accounts = new ArrayList<>();
-        String accountQuery = "SELECT Konto.Kontonummer AS id, Konto.Saldo AS balance, Konto.Räntesats AS interest " +
-                "FROM Konto WHERE Konto.Kund = ?";
+        String accountQuery = "SELECT id, balance, interest_rate " +
+                "FROM account_data WHERE owner_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(accountQuery)) {
             ps.setInt(1, customerId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                accounts.add(new DTOAccount(rs.getInt("id"), customerId, rs.getDouble("balance"), rs.getDouble("interest")));
+                accounts.add(new DTOAccount(rs.getInt("id"), customerId, rs.getDouble("balance"), rs.getDouble("interest_rate")));
             }
         } catch (SQLException e) {
             throw new DatabaseConnectionException("Failed to load account data", e);
@@ -58,10 +57,8 @@ public class JRepository implements ATMRepository {
     @Override
     public List<DTOTransaction> getTransactionHistory(int accountId) throws DatabaseConnectionException, NoSuchAccountException {
         List<DTOTransaction> transactions = new ArrayList<>();
-        String transactionQuery = "SELECT Transaktion.TransaktionID AS id, " +
-                "Transaktion.Saldoförändring AS net_balance, " +
-                "Transaktion.Tidpunkt AS transaction_time " +
-                "FROM Transaktion WHERE Transaktion.Konto = ?";
+        String transactionQuery = "SELECT id, net_balance, transaction_time " +
+                "FROM transaction_data WHERE account_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(transactionQuery)) {
             ps.setInt(1, accountId);
@@ -80,8 +77,8 @@ public class JRepository implements ATMRepository {
     @Override
     public DTOCustomer login(String identification, String pin) throws DatabaseConnectionException, InvalidCredentialsException {
         try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement("SELECT Kund.Kundnummer AS id, Kund.Namn AS customer_name " +
-                     "FROM Kund WHERE Kund.Personnummer = ? AND Kund.Pin = ?")) {
+             PreparedStatement ps = conn.prepareStatement("SELECT customer_id, name " +
+                     "FROM customer_data WHERE personal_id = ? AND pin = ?")) {
             ps.setString(1, identification);
             ps.setString(2, pin);
             ResultSet rs = ps.executeQuery();

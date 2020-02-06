@@ -3,7 +3,7 @@ package se.nackademin.bankomatdb.atm.controller;
 import se.nackademin.bankomatdb.*;
 import se.nackademin.bankomatdb.atm.AlreadyLoggedInException;
 import se.nackademin.bankomatdb.atm.NotLoggedInException;
-import se.nackademin.bankomatdb.atm.repository.JRepository;
+import se.nackademin.bankomatdb.atm.repository.VRepository;
 import se.nackademin.bankomatdb.model.DTOAccount;
 import se.nackademin.bankomatdb.model.DTOCustomer;
 import se.nackademin.bankomatdb.atm.repository.ATMRepository;
@@ -17,7 +17,7 @@ public class Controller {
     private DTOCustomer currentCustomer;
 
     public Controller() throws DatabaseConnectionException {
-        repository = new JRepository();
+        repository = new VRepository();
     }
 
     public DTOCustomer getCurrentCustomer() throws NotLoggedInException {
