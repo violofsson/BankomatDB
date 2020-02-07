@@ -31,6 +31,6 @@ public final class DTOCustomer {
     }
 
     public DTOCustomer updated(String newName, String newPin) {
-        return new DTOCustomer(id, (newName != null) ? newName : name, personalId, (newPin != null) ? newPin : pin);
+        return new DTOCustomer(this.id, newName, this.personalId, newPin);
     }
 }

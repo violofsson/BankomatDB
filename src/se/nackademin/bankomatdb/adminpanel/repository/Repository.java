@@ -20,7 +20,7 @@ public interface Repository {
     DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException, InvalidInsertException;
 
     // Ogiltiga fält
-    DTOCustomer updateCustomer(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException; // TODO Parametrar för uppdaterade fält
+    DTOCustomer updateCustomer(DTOCustomer customer, String newName, String newPin) throws DatabaseConnectionException, NoSuchCustomerException; // TODO Parametrar för uppdaterade fält
 
     boolean deleteCustomer(int customerId) throws DatabaseConnectionException;
 
@@ -40,7 +40,7 @@ public interface Repository {
     DTOLoan approveLoan(int customerId, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, NoSuchCustomerException, InvalidInsertException; // TODO Parametrar för nya fält
 
     // Ogiltiga fält
-    DTOLoan updateLoan(DTOLoan loan) throws DatabaseConnectionException, NoSuchLoanException; // TODO Parametrar för ändrade fält
+    DTOLoan updateLoan(DTOLoan loan, double newInterestRate, LocalDate newDeadline) throws DatabaseConnectionException, NoSuchLoanException; // TODO Parametrar för ändrade fält
 
     Collection<DTOCustomer> getCustomerData() throws DatabaseConnectionException;
 

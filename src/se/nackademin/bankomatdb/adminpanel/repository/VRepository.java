@@ -48,16 +48,17 @@ public class VRepository implements Repository {
     }
 
     @Override
-    public DTOCustomer updateCustomer(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException {
-        String updateQuery = "UPDATE customer_data SET name = ?, personal_id = ?, pin = ? WHERE customer_id = ? ";
+    public DTOCustomer updateCustomer(DTOCustomer customer, String newName, String newPin) throws DatabaseConnectionException, NoSuchCustomerException {
+        String updateQuery = "UPDATE customer_data SET name = ?, pin = ? WHERE customer_id = ? ";
+        customer = customer.updated(newName, newPin);
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(updateQuery, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, customer.getName());
-            ps.setString(2, customer.getPersonalId());
-            ps.setString(3, customer.getPin());
+            ps.setString(2, customer.getPin());
+            ps.setInt(3, customer.getCustomerId());
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
-                return customer; // Om uppdatering lyckades får vi tillbaka samma data
+                return customer;
             } else {
                 throw new NoSuchCustomerException("Failed to update customer with id" + customer.getCustomerId());
             }
@@ -164,7 +165,8 @@ public class VRepository implements Repository {
     }
 
     @Override
-    public DTOLoan updateLoan(DTOLoan loan) throws DatabaseConnectionException, NoSuchLoanException {
+    public DTOLoan updateLoan(DTOLoan loan, double newInterestRate, LocalDate newDeadline) throws DatabaseConnectionException, NoSuchLoanException {
+        loan = loan.updated(newInterestRate, newDeadline);
         String updateQuery = "UPDATE loan_data SET interest_rate = ?, deadline = ? WHERE id = ?";
         try (Connection coon = getConnection();
              PreparedStatement ps = coon.prepareStatement(updateQuery)) {

@@ -25,8 +25,8 @@ public class Controller {
         return repository.addCustomer(name, personalId, pin);
     }
 
-    DTOCustomer updateCustomer(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException {
-        return repository.updateCustomer(customer);
+    DTOCustomer updateCustomer(DTOCustomer customer, String newName, String newPin) throws DatabaseConnectionException, NoSuchCustomerException {
+        return repository.updateCustomer(customer, newName, newPin);
     }
 
     boolean deleteCustomer(DTOCustomer customer) throws DatabaseConnectionException {
@@ -62,7 +62,7 @@ public class Controller {
     }
 
     DTOLoan updateLoan(DTOLoan loan, double newInterestRate, LocalDate newDeadline) throws DatabaseConnectionException, NoSuchLoanException {
-        return repository.updateLoan(loan.updated(newInterestRate, newDeadline));
+        return repository.updateLoan(loan, newInterestRate, newDeadline);
     }
 
     Collection<DTOCustomer> getCustomers() throws DatabaseConnectionException {
