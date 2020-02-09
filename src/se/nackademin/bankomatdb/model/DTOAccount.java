@@ -26,4 +26,9 @@ public final class DTOAccount {
     public double getInterestRate() {
         return interestRate;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Kontonummer %d, räntesats %f%%, saldo %.2f", id, interestRate, balance);
+    }
 }

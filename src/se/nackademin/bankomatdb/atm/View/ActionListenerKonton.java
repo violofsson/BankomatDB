@@ -1,22 +1,22 @@
 package se.nackademin.bankomatdb.atm.View;
 
+import se.nackademin.bankomatdb.model.DTOAccount;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class ActionListenerKonton implements ActionListener {
-
-    private JComboBox kontonComboBox;
+    private JComboBox<DTOAccount> kontonComboBox;
     private JButton taUt;
     private JButton seSaldo;
     private JButton kontoHistorik;
 
-    ActionListenerKonton(JComboBox kontonComboBox, JButton taUt, JButton seSaldo, JButton kontoHistorik) {
+    ActionListenerKonton(JComboBox<DTOAccount> kontonComboBox, JButton taUt, JButton seSaldo, JButton kontoHistorik) {
         this.kontonComboBox = kontonComboBox;
         this.taUt = taUt;
         this.seSaldo = seSaldo;
         this.kontoHistorik = kontoHistorik;
-
     }
 
     @Override
@@ -24,15 +24,11 @@ public class ActionListenerKonton implements ActionListener {
 
         if (e.getSource() == kontonComboBox) {
             //skapa currentkonto metod.
-
-
-        }else if (e.getSource() == taUt) {
+        } else if (e.getSource() == taUt) {
             int summa = Integer.parseInt(JOptionPane.showInputDialog(null, "Hur mycket vill du ta ut?"));
-
-        }else if (e.getSource() == seSaldo) {
+        } else if (e.getSource() == seSaldo) {
             JOptionPane.showMessageDialog(null, "Saldo: ");
-
-        }else if (e.getSource() == kontoHistorik) {
+        } else if (e.getSource() == kontoHistorik) {
             System.out.println("Kontohistorik: ");
         }
     }

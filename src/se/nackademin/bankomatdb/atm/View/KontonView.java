@@ -1,21 +1,19 @@
 package se.nackademin.bankomatdb.atm.View;
 
-import se.nackademin.bankomatdb.atm.viewmodel.VMAccount;
+import se.nackademin.bankomatdb.model.DTOAccount;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
+import java.util.Collection;
 
-public class KontonView extends JFrame{
-
+public class KontonView extends JFrame {
     private Container container = getContentPane();
     private JLabel väljKontoLabel = new JLabel("Välj konto");
-    private JComboBox<String> konton = new JComboBox<>();
+    private JComboBox<DTOAccount> konton = new JComboBox<>();
     private JButton taUt = new JButton("Ta ut");
     private JButton seSaldo = new JButton("Se Saldo");
     private JButton kontoHistorik = new JButton("Kontohistorik");
     private ActionListenerKonton actionListener = new ActionListenerKonton(konton, taUt, seSaldo, kontoHistorik);
-    private HashMap<String, VMAccount> kontoLista;
 
     KontonView() {
         setLayout();
@@ -28,12 +26,10 @@ public class KontonView extends JFrame{
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         this.setVisible(false);
-
     }
 
     public void setLayout() {
         container.setLayout(null);
-
     }
 
     public void setLocationAndSize() {
@@ -43,7 +39,6 @@ public class KontonView extends JFrame{
         taUt.setBounds(40, 80, 100, 30);
         seSaldo.setBounds(150, 80, 100, 30);
         kontoHistorik.setBounds(260, 80, 100, 30);
-
     }
 
     public void addComponentsToContainer() {
@@ -61,10 +56,8 @@ public class KontonView extends JFrame{
         kontoHistorik.addActionListener(actionListener);
     }
 
-    public void fillComboBox() {
-        //Fyll hashmapen med Kontonamn och Konton
-        for (String kontoNamn : kontoLista.keySet()) {
-            konton.addItem(kontoNamn);
-        }
+    public void fillComboBox(Collection<DTOAccount> accounts) {
+        konton.removeAllItems();
+        accounts.forEach(acc -> konton.addItem(acc));
     }
 }
