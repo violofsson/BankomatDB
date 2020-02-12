@@ -18,6 +18,10 @@ public final class DTOAccount {
         return id;
     }
 
+    public int getOwnerId() {
+        return ownerId;
+    }
+
     public double getBalance() {
         return balance;
     }

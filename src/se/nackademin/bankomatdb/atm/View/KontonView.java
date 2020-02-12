@@ -1,5 +1,8 @@
 package se.nackademin.bankomatdb.atm.View;
 
+import se.nackademin.bankomatdb.DatabaseConnectionException;
+import se.nackademin.bankomatdb.InsufficientFundsException;
+import se.nackademin.bankomatdb.NoSuchAccountException;
 import se.nackademin.bankomatdb.atm.controller.Controller;
 import se.nackademin.bankomatdb.model.DTOAccount;
 
@@ -52,9 +55,9 @@ public class KontonView extends JFrame {
 
     void addActionEvent() {
         konton.addActionListener(e -> selectKonto());
-        taUt.addActionListener(e -> withdraw());
-        seSaldo.addActionListener(e -> viewSaldo());
-        kontoHistorik.addActionListener(e -> printKontohistorik());
+        taUt.addActionListener(e -> withdraw((DTOAccount) konton.getSelectedItem()));
+        seSaldo.addActionListener(e -> viewSaldo((DTOAccount) konton.getSelectedItem()));
+        kontoHistorik.addActionListener(e -> printKontohistorik((DTOAccount) konton.getSelectedItem()));
     }
 
     void fillComboBox(Collection<DTOAccount> accounts) {
@@ -62,19 +65,33 @@ public class KontonView extends JFrame {
         accounts.forEach(acc -> konton.addItem(acc));
     }
 
-    void printKontohistorik() {
-        System.out.println("Kontohistorik: ");
+    void printKontohistorik(DTOAccount account) {
+        try {
+            System.out.println("Kontohistorik för kontonummer " + account.getAccountId() + ":");
+            controller.getTransactionHistory(account).forEach(t -> System.out.println(t.toString()));
+        } catch (DatabaseConnectionException | NoSuchAccountException e) {
+            e.printStackTrace();
+        }
     }
 
     void selectKonto() {
         // Skapa currentKonto metod
     }
 
-    void viewSaldo() {
-        JOptionPane.showMessageDialog(null, "Saldo: ");
+    void viewSaldo(DTOAccount account) {
+        JOptionPane.showMessageDialog(null, "Saldo: " + account.getBalance());
     }
 
-    void withdraw() {
+    void withdraw(DTOAccount account) {
         int summa = Integer.parseInt(JOptionPane.showInputDialog(null, "Hur mycket vill du ta ut?"));
+        try {
+            if (controller.withdraw(account, summa)) {
+                // uttag lyckades
+            } else {
+                // uttag misslyckades utan felsignal
+            }
+        } catch (NoSuchAccountException | DatabaseConnectionException | InsufficientFundsException e) {
+            e.printStackTrace();
+        }
     }
 }

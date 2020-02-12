@@ -133,27 +133,33 @@ public class VRepository implements Repository {
         }
     }
 
+    // TODO
     @Override
     public DTOLoan approveLoan(int customerId, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, InvalidInsertException, NoSuchCustomerException {
         String insertQuery = "INSERT INTO loan_data (debtor_id, original_amount, granted, deadline, interest_rate) VALUES (?, ?, ?, ?, ?)";
+        String readQuery = "SELECT debtor_id, original_amount, granted, deadline, interest_rate FROM loan_data WHERE id = ?";
         try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(insertQuery)) {
+             PreparedStatement insert = conn.prepareStatement(insertQuery);
+             PreparedStatement read = conn.prepareStatement(readQuery)) {
             LocalDate granted = LocalDate.now();
-            ps.setInt(1, customerId);
-            ps.setDouble(2, sum);
-            ps.setDate(3, Date.valueOf(granted));
-            ps.setDate(4, Date.valueOf(deadline));
-            ps.setDouble(5, interestRate);
-            int affextedRows = ps.executeUpdate();
+            insert.setInt(1, customerId);
+            insert.setDouble(2, sum);
+            insert.setDate(3, Date.valueOf(granted));
+            insert.setDate(4, Date.valueOf(deadline));
+            insert.setDouble(5, interestRate);
+            int affextedRows = insert.executeUpdate();
             if (affextedRows > 0) {
-                ResultSet rs = ps.getGeneratedKeys();
+                ResultSet rs = insert.getGeneratedKeys();
                 rs.next();
-                return new DTOLoan(rs.getInt(1),
-                        customerId,
-                        sum,
-                        interestRate,
-                        granted,
-                        deadline);
+                int loanId = rs.getInt(1);
+                rs = read.executeQuery();
+                rs.next();
+                return new DTOLoan(loanId,
+                        rs.getInt("debtor_id"),
+                        rs.getDouble("original_amount"),
+                        rs.getDouble("interest_rate"),
+                        rs.getDate("granted").toLocalDate(),
+                        rs.getDate("deadline").toLocalDate());
             } else {
                 throw new InvalidInsertException("Failed to insert new loan into database");
             }
@@ -166,16 +172,15 @@ public class VRepository implements Repository {
 
     @Override
     public DTOLoan updateLoan(DTOLoan loan, double newInterestRate, LocalDate newDeadline) throws DatabaseConnectionException, NoSuchLoanException {
-        loan = loan.updated(newInterestRate, newDeadline);
         String updateQuery = "UPDATE loan_data SET interest_rate = ?, deadline = ? WHERE id = ?";
         try (Connection coon = getConnection();
              PreparedStatement ps = coon.prepareStatement(updateQuery)) {
-            ps.setDouble(1, loan.getInterestRate());
-            ps.setDate(2, Date.valueOf(loan.getPaymentDeadline()));
+            ps.setDouble(1, newInterestRate);
+            ps.setDate(2, Date.valueOf(newDeadline));
             ps.setInt(3, loan.getLoanId());
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
-                return loan;
+                return loan.updated(newInterestRate, newDeadline);
             } else {
                 throw new NoSuchLoanException();
             }

@@ -106,7 +106,24 @@ public class VRepository implements ATMRepository {
     // TODO
     @Override
     public boolean withdraw(int accountId, int amount) throws DatabaseConnectionException, InsufficientFundsException, NoSuchAccountException {
-        return false;
+        if (amount < 0) {
+            throw new IllegalArgumentException();
+        }
+        try (Connection conn = getConnection();
+        PreparedStatement update = conn.prepareStatement("UPDATE account_data SET balance = balance - ? WHERE id = ?");
+        PreparedStatement read = conn.prepareStatement("SELECT owner_id, balance, interest_rate FROM account_data WHERE id = ?")) {
+            int affectedRows = update.executeUpdate();
+            if (affectedRows == 0) {
+                throw new NoSuchAccountException();
+            } else {
+                // Uppdatera saldo med nytt kontoobjekt?
+                return true;
+            }
+        } catch (SQLIntegrityConstraintViolationException e) {
+            return false;
+        } catch (SQLException e) {
+            throw new DatabaseConnectionException(e);
+        }
     }
 
     private Connection getConnection() throws SQLException {
