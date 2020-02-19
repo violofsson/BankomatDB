@@ -31,11 +31,6 @@ public final class DTOAccount {
         return interestRate;
     }
 
-    public DTOAccount afterTransaction(double balanceChange) {
-        // Kontrollera saldo?
-        return new DTOAccount(id, ownerId, balance + balanceChange, interestRate);
-    }
-
     @Override
     public String toString() {
         return String.format("Kontonummer %d, räntesats %f%%, saldo %.2f", id, interestRate, balance);

@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 // TODO
 public final class DTOTransaction {
-    // Ska konto och ev kund hanteras som lagrat id eller konstruktorparameterobjekt?
     private final int id;
     private final int accountId;
     private final double netBalance;
@@ -19,6 +18,10 @@ public final class DTOTransaction {
 
     public int getTransactionId() {
         return id;
+    }
+
+    public int getAccountId() {
+        return accountId;
     }
 
     // Plus för kredit, minus för debet

@@ -50,15 +50,14 @@ public class VRepository implements Repository {
     @Override
     public DTOCustomer updateCustomer(DTOCustomer customer, String newName, String newPin) throws DatabaseConnectionException, NoSuchRecordException {
         String updateQuery = "UPDATE customer_data SET name = ?, pin = ? WHERE customer_id = ? ";
-        customer = customer.updated(newName, newPin);
         try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(updateQuery, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, customer.getName());
-            ps.setString(2, customer.getPin());
+             PreparedStatement ps = conn.prepareStatement(updateQuery)) {
+            ps.setString(1, newName);
+            ps.setString(2, newPin);
             ps.setInt(3, customer.getCustomerId());
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
-                return customer;
+                return customer.updated(newName, newPin);
             } else {
                 throw new NoSuchRecordException("Found no customer with id" + customer.getCustomerId());
             }
@@ -100,69 +99,48 @@ public class VRepository implements Repository {
         return deleteEntityById(accountId, "DELETE FROM account_data WHERE account_id = ?");
     }
 
-    // TODO
-    @Override
-    public DTOTransaction deposit(int accountId, double amount) throws DatabaseConnectionException, NoSuchRecordException {
-        if (amount < 0) {
-            throw new IllegalArgumentException();
-        }
+    private DTOAccount transact(int accountId, double balanceChange) throws SQLException, NoSuchRecordException {
+        String updateStatement = "UPDATE account_data SET balance = balance + ? WHERE id = ?";
+        String readStatement = "SELECT id, owner_id, balance, interest_rate FROM account_data WHERE id = ?";
         try (Connection conn = getConnection();
-             PreparedStatement updateStatement = conn.prepareStatement("UPDATE account_data SET balance = balance + ? WHERE id = ?");
-             PreparedStatement readStatement = conn.prepareStatement("SELECT id, account_id, net_balance, transaction_time FROM transaction_data WHERE id = ?")) {
-            updateStatement.setDouble(1, amount);
-            updateStatement.setInt(2, accountId);
-            int affectedRows = updateStatement.executeUpdate();
+             PreparedStatement preparedUpdate = conn.prepareStatement(updateStatement);
+             PreparedStatement preparedRead = conn.prepareStatement(readStatement)) {
+            preparedUpdate.setDouble(1, balanceChange);
+            preparedUpdate.setInt(2, accountId);
+            int affectedRows = preparedUpdate.executeUpdate();
             if (affectedRows == 0) {
                 throw new NoSuchRecordException("Account number " + accountId + " not found.");
             } else {
-                ResultSet rs = updateStatement.getGeneratedKeys();
-                rs.next();
-                int transactionId = rs.getInt("id");
-                readStatement.setInt(1, transactionId);
-                rs = readStatement.executeQuery();
+                preparedRead.setInt(1, accountId);
+                ResultSet rs = preparedRead.executeQuery();
                 if (rs.next()) {
-                    return new DTOTransaction(rs.getInt("id"),
-                            rs.getInt("account_id"),
-                            rs.getDouble("net_balance"),
-                            rs.getTimestamp("transaction_time").toLocalDateTime());
+                    return new DTOAccount(
+                            rs.getInt("id"),
+                            rs.getInt("owner_id"),
+                            rs.getDouble("balance"),
+                            rs.getDouble("interest_rate"));
                 } else {
-                    throw new NoSuchRecordException("No transaction entry generated");
+                    throw new NoSuchRecordException("Account number " + accountId + " not found.");
                 }
             }
+        }
+    }
+
+    @Override
+    public DTOAccount deposit(int accountId, double amount) throws DatabaseConnectionException, NoSuchRecordException {
+        if (amount < 0) throw new IllegalArgumentException();
+        try {
+            return transact(accountId, amount);
         } catch (SQLException e) {
             throw new DatabaseConnectionException(e);
         }
     }
 
-    // TODO
     @Override
-    public DTOTransaction withdraw(int accountId, double amount) throws DatabaseConnectionException, NoSuchRecordException, InsufficientFundsException {
-        if (amount < 0) {
-            throw new IllegalArgumentException();
-        }
-        try (Connection conn = getConnection();
-             PreparedStatement updateStatement = conn.prepareStatement("UPDATE account_data SET balance = balance - ? WHERE id = ?");
-             PreparedStatement readStatement = conn.prepareStatement("SELECT id, account_id, net_balance, transaction_time FROM transaction_data WHERE id = ?")) {
-            updateStatement.setDouble(1, amount);
-            updateStatement.setInt(2, accountId);
-            int affectedRows = updateStatement.executeUpdate();
-            if (affectedRows == 0) {
-                throw new NoSuchRecordException("Account number " + accountId + " not found.");
-            } else {
-                ResultSet rs = updateStatement.getGeneratedKeys();
-                rs.next();
-                int transactionId = rs.getInt("id");
-                readStatement.setInt(1, transactionId);
-                rs = readStatement.executeQuery();
-                if (rs.next()) {
-                    return new DTOTransaction(rs.getInt("id"),
-                            rs.getInt("account_id"),
-                            rs.getDouble("net_balance"),
-                            rs.getTimestamp("transaction_time").toLocalDateTime());
-                } else {
-                    throw new NoSuchRecordException("No transaction entry generated");
-                }
-            }
+    public DTOAccount withdraw(int accountId, double amount) throws DatabaseConnectionException, NoSuchRecordException, InsufficientFundsException {
+        if (amount < 0) throw new IllegalArgumentException();
+        try {
+            return transact(accountId, -amount);
         } catch (SQLIntegrityConstraintViolationException e) {
             throw new InsufficientFundsException(e);
         } catch (SQLException e) {
@@ -174,7 +152,7 @@ public class VRepository implements Repository {
     public DTOAccount setAccountInterestRate(int accountId, double newInterestRate) throws DatabaseConnectionException, NoSuchRecordException {
         String updateQuery = "UPDATE account_data SET balance = ? WHERE id = ?";
         try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(updateQuery, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = conn.prepareStatement(updateQuery)) {
             ps.setDouble(1, newInterestRate);
             ps.setInt(2, accountId);
             int affectedRows = ps.executeUpdate();
@@ -197,7 +175,7 @@ public class VRepository implements Repository {
         String insertQuery = "INSERT INTO loan_data (debtor_id, original_amount, granted, deadline, interest_rate) VALUES (?, ?, ?, ?, ?)";
         String readQuery = "SELECT debtor_id, original_amount, granted, deadline, interest_rate FROM loan_data WHERE id = ?";
         try (Connection conn = getConnection();
-             PreparedStatement insert = conn.prepareStatement(insertQuery);
+             PreparedStatement insert = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
              PreparedStatement read = conn.prepareStatement(readQuery)) {
             LocalDate granted = LocalDate.now();
             insert.setInt(1, customerId);
@@ -266,8 +244,7 @@ public class VRepository implements Repository {
     @Override
     public Collection<DTOAccount> getAccountData(DTOCustomer customer) throws DatabaseConnectionException, NoSuchRecordException {
         int customerId = customer.getCustomerId();
-        String accountQuery = "SELECT id, balance, interest_rate " +
-                "FROM account_data WHERE owner_id = ?";
+        String accountQuery = "SELECT id, balance, interest_rate FROM account_data WHERE owner_id = ?";
         List<DTOAccount> accounts = new ArrayList<>();
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(accountQuery)) {
@@ -335,7 +312,7 @@ public class VRepository implements Repository {
              PreparedStatement ps = conn.prepareStatement(statement)) {
             ps.setInt(1, id);
             int affectedRows = ps.executeUpdate();
-            return (affectedRows != 0);
+            return (affectedRows > 0);
         } catch (SQLException e) {
             throw new DatabaseConnectionException(e);
         }

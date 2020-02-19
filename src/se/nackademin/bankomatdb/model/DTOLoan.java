@@ -5,7 +5,6 @@ import java.time.temporal.ChronoUnit;
 
 // TODO
 public final class DTOLoan {
-    // Hur ska låntagaren lagras? Behöver hen lagras alls eller ska klienten hantera det?
     private final int id;
     private final int debtorId;
     private final double originalLoan;

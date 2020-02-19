@@ -16,27 +16,24 @@ public interface Repository {
     // nya på något lämpligt sätt
     // TODO Kasta relevanta exceptions när en operation misslyckas
 
-    // Ogiltiga fält
     DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException, InvalidInsertException;
 
     // Ogiltiga fält
     DTOCustomer updateCustomer(DTOCustomer customer, String newName, String newPin) throws DatabaseConnectionException, NoSuchRecordException; // TODO Parametrar för uppdaterade fält
 
-    boolean deleteCustomer(int customerId) throws DatabaseConnectionException;
+    boolean deleteCustomer(int customerId) throws DatabaseConnectionException, NoSuchRecordException;
 
-    // Ogltiga fält
     DTOAccount openAccount(int customerId, double initialBalance, double interestRate) throws DatabaseConnectionException, NoSuchRecordException, InvalidInsertException;
 
-    boolean closeAccount(int accountId) throws DatabaseConnectionException;
+    boolean closeAccount(int accountId) throws DatabaseConnectionException, NoSuchRecordException;
 
-    DTOTransaction deposit(int accountId, double amount) throws DatabaseConnectionException, NoSuchRecordException;
+    DTOAccount deposit(int accountId, double amount) throws DatabaseConnectionException, NoSuchRecordException;
 
-    DTOTransaction withdraw(int accountId, double amount) throws DatabaseConnectionException, NoSuchRecordException, InsufficientFundsException;
+    DTOAccount withdraw(int accountId, double amount) throws DatabaseConnectionException, NoSuchRecordException, InsufficientFundsException;
 
     // Ogiltig ränta
     DTOAccount setAccountInterestRate(int accountId, double newInterestRate) throws DatabaseConnectionException, NoSuchRecordException;
 
-    // Ogiltiga fält
     DTOLoan approveLoan(int customerId, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, NoSuchRecordException, InvalidInsertException; // TODO Parametrar för nya fält
 
     // Ogiltiga fält
