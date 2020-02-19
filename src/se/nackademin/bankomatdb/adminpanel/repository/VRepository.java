@@ -37,11 +37,13 @@ public class VRepository implements Repository {
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
                 ResultSet rs = ps.getGeneratedKeys();
-                rs.next(); // Garanterat då affectedRows > 0
+                rs.next(); // Garanterat true då affectedRows > 0
                 return new DTOCustomer(rs.getInt(1), name, personalId, pin);
             } else {
                 throw new InvalidInsertException("Failed to insert new customer into database");
             }
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new InvalidInsertException(e);
         } catch (SQLException e) {
             throw new DatabaseConnectionException(e);
         }
@@ -83,12 +85,16 @@ public class VRepository implements Repository {
             if (affectedRows > 0) {
                 ResultSet rs = ps.getGeneratedKeys();
                 rs.next(); // Garanterat då affectedRows > 0
-                return new DTOAccount(rs.getInt(1), customerId, initialBalance, interestRate);
+                return new DTOAccount(
+                        rs.getInt(1),
+                        customerId,
+                        initialBalance,
+                        interestRate);
             } else {
                 throw new InvalidInsertException("Failed to insert new account into database");
             }
         } catch (SQLIntegrityConstraintViolationException e) {
-            throw new NoSuchRecordException("Invalid customer id", e);
+            throw new InvalidInsertException(e);
         } catch (SQLException e) {
             throw new DatabaseConnectionException(e);
         }
@@ -101,7 +107,7 @@ public class VRepository implements Repository {
 
     private DTOAccount transact(int accountId, double balanceChange) throws SQLException, NoSuchRecordException {
         String updateStatement = "UPDATE account_data SET balance = balance + ? WHERE id = ?";
-        String readStatement = "SELECT id, owner_id, balance, interest_rate FROM account_data WHERE id = ?";
+        String readStatement = "SELECT owner_id, balance, interest_rate FROM account_data WHERE id = ?";
         try (Connection conn = getConnection();
              PreparedStatement preparedUpdate = conn.prepareStatement(updateStatement);
              PreparedStatement preparedRead = conn.prepareStatement(readStatement)) {
@@ -115,7 +121,7 @@ public class VRepository implements Repository {
                 ResultSet rs = preparedRead.executeQuery();
                 if (rs.next()) {
                     return new DTOAccount(
-                            rs.getInt("id"),
+                            accountId,
                             rs.getInt("owner_id"),
                             rs.getDouble("balance"),
                             rs.getDouble("interest_rate"));
@@ -150,17 +156,23 @@ public class VRepository implements Repository {
 
     @Override
     public DTOAccount setAccountInterestRate(int accountId, double newInterestRate) throws DatabaseConnectionException, NoSuchRecordException {
-        String updateQuery = "UPDATE account_data SET balance = ? WHERE id = ?";
+        String updateQuery = "UPDATE account_data SET interest_rate = ? WHERE id = ?";
+        String readQuery = "SELECT owner_id, balance FROM account_data WHERE id = ?";
         try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(updateQuery)) {
-            ps.setDouble(1, newInterestRate);
-            ps.setInt(2, accountId);
-            int affectedRows = ps.executeUpdate();
+             PreparedStatement updateStatement = conn.prepareStatement(updateQuery);
+             PreparedStatement readStatement = conn.prepareStatement(readQuery)) {
+            updateStatement.setDouble(1, newInterestRate);
+            updateStatement.setInt(2, accountId);
+            int affectedRows = updateStatement.executeUpdate();
             if (affectedRows > 0) {
-                ResultSet rs = ps.getGeneratedKeys();
+                readStatement.setInt(1, accountId);
+                ResultSet rs = readStatement.executeQuery();
                 rs.next();
-                // TODO Korrigera
-                return new DTOAccount(rs.getInt(1), rs.getInt("owner_id"), rs.getDouble("balance"), newInterestRate);
+                return new DTOAccount(
+                        accountId,
+                        rs.getInt("owner_id"),
+                        rs.getDouble("balance"),
+                        newInterestRate);
             } else {
                 throw new NoSuchRecordException("No account with id " + accountId);
             }
@@ -169,11 +181,10 @@ public class VRepository implements Repository {
         }
     }
 
-    // TODO
     @Override
     public DTOLoan approveLoan(int customerId, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, InvalidInsertException, NoSuchRecordException {
         String insertQuery = "INSERT INTO loan_data (debtor_id, original_amount, granted, deadline, interest_rate) VALUES (?, ?, ?, ?, ?)";
-        String readQuery = "SELECT debtor_id, original_amount, granted, deadline, interest_rate FROM loan_data WHERE id = ?";
+        String readQuery = "SELECT granted, deadline FROM loan_data WHERE id = ?";
         try (Connection conn = getConnection();
              PreparedStatement insert = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
              PreparedStatement read = conn.prepareStatement(readQuery)) {
@@ -190,10 +201,11 @@ public class VRepository implements Repository {
                 int loanId = rs.getInt(1);
                 rs = read.executeQuery();
                 rs.next();
-                return new DTOLoan(loanId,
-                        rs.getInt("debtor_id"),
-                        rs.getDouble("original_amount"),
-                        rs.getDouble("interest_rate"),
+                return new DTOLoan(
+                        loanId,
+                        customerId,
+                        sum,
+                        interestRate,
                         rs.getDate("granted").toLocalDate(),
                         rs.getDate("deadline").toLocalDate());
             } else {

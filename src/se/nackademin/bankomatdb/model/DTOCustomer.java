@@ -1,6 +1,5 @@
 package se.nackademin.bankomatdb.model;
 
-// TODO
 public final class DTOCustomer {
     private final int id;
     private final String name;
@@ -31,6 +30,6 @@ public final class DTOCustomer {
     }
 
     public DTOCustomer updated(String newName, String newPin) {
-        return new DTOCustomer(this.id, newName, this.personalId, newPin);
+        return new DTOCustomer(this.getCustomerId(), newName, this.getPersonalId(), newPin);
     }
 }

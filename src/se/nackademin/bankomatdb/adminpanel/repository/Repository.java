@@ -9,7 +9,6 @@ import se.nackademin.bankomatdb.model.DTOTransaction;
 import java.time.LocalDate;
 import java.util.Collection;
 
-// TODO
 public interface Repository {
     // Obs: upserts returnerar skapat/uppdaterat objekt; för att vara konsekvent
     // rekommenderas att eventuell lagring ersätter det gamla objektet med det

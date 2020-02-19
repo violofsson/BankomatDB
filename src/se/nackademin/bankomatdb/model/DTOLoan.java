@@ -3,7 +3,6 @@ package se.nackademin.bankomatdb.model;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-// TODO
 public final class DTOLoan {
     private final int id;
     private final int debtorId;
@@ -30,7 +29,7 @@ public final class DTOLoan {
     }
 
     public double getFinalPayment() {
-        return originalLoan * Math.pow(1 + (interestRate/100), ChronoUnit.MONTHS.between(granted, deadline));
+        return originalLoan * Math.pow(1 + (interestRate / 100), ChronoUnit.MONTHS.between(granted, deadline));
     }
 
     public double getInterestRate() {
@@ -51,6 +50,12 @@ public final class DTOLoan {
     }
 
     public DTOLoan updated(double newInterestRate, LocalDate newDeadline) {
-        return new DTOLoan(this.id, this.debtorId, this.originalLoan, newInterestRate, this.granted, newDeadline);
+        return new DTOLoan(
+                this.getLoanId(),
+                this.getDebtorId(),
+                this.getOriginalLoan(),
+                newInterestRate,
+                this.grantedOn(),
+                newDeadline);
     }
 }

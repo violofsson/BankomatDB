@@ -2,6 +2,7 @@ package se.nackademin.bankomatdb;
 
 public class NoSuchRecordException extends Exception {
     public NoSuchRecordException() {
+        super();
     }
 
     public NoSuchRecordException(String message) {

@@ -2,7 +2,6 @@ package se.nackademin.bankomatdb.model;
 
 import java.time.LocalDateTime;
 
-// TODO
 public final class DTOTransaction {
     private final int id;
     private final int accountId;

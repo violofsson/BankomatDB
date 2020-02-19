@@ -1,6 +1,5 @@
 package se.nackademin.bankomatdb.model;
 
-// TODO
 public final class DTOAccount {
     private final int id;
     private final int ownerId;

@@ -27,8 +27,7 @@ public class VRepository implements ATMRepository {
     @Override
     public List<DTOAccount> getCustomerAccounts(int customerId) throws DatabaseConnectionException {
         List<DTOAccount> accounts = new ArrayList<>();
-        String accountQuery = "SELECT id, balance, interest_rate " +
-                "FROM account_data WHERE owner_id = ?";
+        String accountQuery = "SELECT id, balance, interest_rate FROM account_data WHERE owner_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(accountQuery)) {
             ps.setInt(1, customerId);
@@ -42,7 +41,6 @@ public class VRepository implements ATMRepository {
         return accounts;
     }
 
-    // TODO
     @Override
     public List<DTOLoan> getCustomerLoans(int customerId) throws DatabaseConnectionException {
         String loanQuery = "SELECT id, original_amount, granted, interest_rate FROM loan_data WHERE debtor_id = ?";
@@ -66,7 +64,7 @@ public class VRepository implements ATMRepository {
     }
 
     @Override
-    public List<DTOTransaction> getTransactionHistory(int accountId) throws DatabaseConnectionException, NoSuchRecordException {
+    public List<DTOTransaction> getTransactionHistory(int accountId) throws DatabaseConnectionException {
         List<DTOTransaction> transactions = new ArrayList<>();
         String transactionQuery = "SELECT id, net_balance, transaction_time " +
                 "FROM transaction_data WHERE account_id = ?";
