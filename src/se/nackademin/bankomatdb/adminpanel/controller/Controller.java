@@ -36,14 +36,14 @@ public class Controller {
             try {
                 accounts.putAll(repository.getAccountData(c).stream().collect(Collectors.toMap(DTOAccount::getAccountId, acc -> acc)));
                 loans.putAll(repository.getLoanData(c).stream().collect(Collectors.toMap(DTOLoan::getLoanId, l -> l)));
-            } catch (NoSuchCustomerException ignored) {
+            } catch (NoSuchRecordException ignored) {
                 // ???
             }
         }
         for (DTOAccount acc : accounts.values()) {
             try {
                 transactions.put(acc.getAccountId(), repository.getTransactionHistory(acc));
-            } catch (NoSuchAccountException ignored) {
+            } catch (NoSuchRecordException ignored) {
                 // ???
             }
         }
@@ -55,7 +55,7 @@ public class Controller {
         return newCustomer;
     }
 
-    DTOCustomer updateCustomer(DTOCustomer customer, String newName, String newPin) throws DatabaseConnectionException, NoSuchCustomerException {
+    DTOCustomer updateCustomer(DTOCustomer customer, String newName, String newPin) throws DatabaseConnectionException, NoSuchRecordException {
         DTOCustomer updated = repository.updateCustomer(customer, newName, newPin);
         customers.put(updated.getCustomerId(), updated);
         return updated;
@@ -66,7 +66,7 @@ public class Controller {
         return repository.deleteCustomer(customer.getCustomerId());
     }
 
-    DTOAccount openAccount(DTOCustomer customer, double interestRate) throws DatabaseConnectionException, NoSuchCustomerException, InvalidInsertException {
+    DTOAccount openAccount(DTOCustomer customer, double interestRate) throws DatabaseConnectionException, NoSuchRecordException, InvalidInsertException {
         DTOAccount newAccount = repository.openAccount(customer.getCustomerId(), 0, interestRate);
         accounts.put(newAccount.getAccountId(), newAccount);
         return newAccount;
@@ -77,31 +77,31 @@ public class Controller {
         return repository.closeAccount(account.getAccountId());
     }
 
-    void deposit(DTOAccount account, double amount) throws DatabaseConnectionException, NoSuchAccountException {
+    void deposit(DTOAccount account, double amount) throws DatabaseConnectionException, NoSuchRecordException {
         if (amount < 0)
             throw new IllegalArgumentException("Attempting to deposit a negative amount");
         repository.deposit(account.getAccountId(), amount);
     }
 
-    void withdraw(DTOAccount account, double amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchAccountException {
+    void withdraw(DTOAccount account, double amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchRecordException {
         if (amount < 0)
             throw new IllegalArgumentException("Attempting to withdraw a negative amount");
         repository.withdraw(account.getAccountId(), -amount);
     }
 
-    DTOAccount updateInterestRate(DTOAccount account, double newRate) throws DatabaseConnectionException, NoSuchAccountException {
+    DTOAccount updateInterestRate(DTOAccount account, double newRate) throws DatabaseConnectionException, NoSuchRecordException {
         DTOAccount updated = repository.setAccountInterestRate(account.getAccountId(), newRate);
         accounts.put(updated.getAccountId(), updated);
         return updated;
     }
 
-    DTOLoan approveLoan(DTOCustomer customer, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, NoSuchCustomerException, InvalidInsertException {
+    DTOLoan approveLoan(DTOCustomer customer, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, NoSuchRecordException, InvalidInsertException {
         DTOLoan approved = repository.approveLoan(customer.getCustomerId(), sum, interestRate, deadline);
         loans.put(approved.getLoanId(), approved);
         return approved;
     }
 
-    DTOLoan updateLoan(DTOLoan loan, double newInterestRate, LocalDate newDeadline) throws DatabaseConnectionException, NoSuchLoanException {
+    DTOLoan updateLoan(DTOLoan loan, double newInterestRate, LocalDate newDeadline) throws DatabaseConnectionException, NoSuchRecordException {
         DTOLoan updated = repository.updateLoan(loan, newInterestRate, newDeadline);
         loans.put(updated.getLoanId(), updated);
         return updated;
@@ -115,7 +115,7 @@ public class Controller {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    Collection<DTOAccount> getCustomerAccounts(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException {
+    Collection<DTOAccount> getCustomerAccounts(DTOCustomer customer) throws DatabaseConnectionException, NoSuchRecordException {
         return accounts.values()
                 .stream()
                 .filter(acc -> acc.getOwnerId() == customer.getCustomerId())
@@ -123,7 +123,7 @@ public class Controller {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    Collection<DTOLoan> getCustomerLoans(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException {
+    Collection<DTOLoan> getCustomerLoans(DTOCustomer customer) throws DatabaseConnectionException, NoSuchRecordException {
         return loans.values()
                 .stream()
                 .filter(loan -> loan.getDebtorId() == customer.getCustomerId())
@@ -131,7 +131,7 @@ public class Controller {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    Collection<DTOTransaction> getAccountTransactions(DTOAccount account, LocalDate since) throws DatabaseConnectionException, NoSuchAccountException {
+    Collection<DTOTransaction> getAccountTransactions(DTOAccount account, LocalDate since) throws DatabaseConnectionException, NoSuchRecordException {
         return transactions.get(account.getAccountId())
                 .stream()
                 .filter(t -> !t.getTransactionTime().isBefore(ChronoLocalDateTime.from(since)))

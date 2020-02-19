@@ -48,7 +48,7 @@ public class VRepository implements Repository {
     }
 
     @Override
-    public DTOCustomer updateCustomer(DTOCustomer customer, String newName, String newPin) throws DatabaseConnectionException, NoSuchCustomerException {
+    public DTOCustomer updateCustomer(DTOCustomer customer, String newName, String newPin) throws DatabaseConnectionException, NoSuchRecordException {
         String updateQuery = "UPDATE customer_data SET name = ?, pin = ? WHERE customer_id = ? ";
         customer = customer.updated(newName, newPin);
         try (Connection conn = getConnection();
@@ -60,7 +60,7 @@ public class VRepository implements Repository {
             if (affectedRows > 0) {
                 return customer;
             } else {
-                throw new NoSuchCustomerException("Failed to update customer with id" + customer.getCustomerId());
+                throw new NoSuchRecordException("Found no customer with id" + customer.getCustomerId());
             }
         } catch (SQLException e) {
             throw new DatabaseConnectionException(e);
@@ -73,7 +73,7 @@ public class VRepository implements Repository {
     }
 
     @Override
-    public DTOAccount openAccount(int customerId, double initialBalance, double interestRate) throws DatabaseConnectionException, InvalidInsertException, NoSuchCustomerException {
+    public DTOAccount openAccount(int customerId, double initialBalance, double interestRate) throws DatabaseConnectionException, InvalidInsertException, NoSuchRecordException {
         String openStatement = "INSERT INTO account_data (owner_id, balance, interest_rate) VALUES (?, ?, ?) ";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(openStatement, Statement.RETURN_GENERATED_KEYS)) {
@@ -89,7 +89,7 @@ public class VRepository implements Repository {
                 throw new InvalidInsertException("Failed to insert new account into database");
             }
         } catch (SQLIntegrityConstraintViolationException e) {
-            throw new NoSuchCustomerException(e);
+            throw new NoSuchRecordException("Invalid customer id", e);
         } catch (SQLException e) {
             throw new DatabaseConnectionException(e);
         }
@@ -102,18 +102,18 @@ public class VRepository implements Repository {
 
     // TODO
     @Override
-    public DTOAccount deposit(int accountId, double amount) throws DatabaseConnectionException, NoSuchAccountException {
+    public DTOAccount deposit(int accountId, double amount) throws DatabaseConnectionException, NoSuchRecordException {
         return null;
     }
 
     // TODO
     @Override
-    public DTOAccount withdraw(int accountId, double amount) throws DatabaseConnectionException, NoSuchAccountException, InsufficientFundsException {
+    public DTOAccount withdraw(int accountId, double amount) throws DatabaseConnectionException, NoSuchRecordException, InsufficientFundsException {
         return null;
     }
 
     @Override
-    public DTOAccount setAccountInterestRate(int accountId, double newInterestRate) throws DatabaseConnectionException, NoSuchAccountException {
+    public DTOAccount setAccountInterestRate(int accountId, double newInterestRate) throws DatabaseConnectionException, NoSuchRecordException {
         String updateQuery = "UPDATE account_data SET balance = ? WHERE id = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(updateQuery, Statement.RETURN_GENERATED_KEYS)) {
@@ -126,7 +126,7 @@ public class VRepository implements Repository {
                 // TODO Korrigera
                 return new DTOAccount(rs.getInt(1), rs.getInt("owner_id"), rs.getDouble("balance"), newInterestRate);
             } else {
-                throw new NoSuchAccountException("Failed to update account " + accountId);
+                throw new NoSuchRecordException("No account with id " + accountId);
             }
         } catch (SQLException e) {
             throw new DatabaseConnectionException(e);
@@ -135,7 +135,7 @@ public class VRepository implements Repository {
 
     // TODO
     @Override
-    public DTOLoan approveLoan(int customerId, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, InvalidInsertException, NoSuchCustomerException {
+    public DTOLoan approveLoan(int customerId, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, InvalidInsertException, NoSuchRecordException {
         String insertQuery = "INSERT INTO loan_data (debtor_id, original_amount, granted, deadline, interest_rate) VALUES (?, ?, ?, ?, ?)";
         String readQuery = "SELECT debtor_id, original_amount, granted, deadline, interest_rate FROM loan_data WHERE id = ?";
         try (Connection conn = getConnection();
@@ -164,14 +164,14 @@ public class VRepository implements Repository {
                 throw new InvalidInsertException("Failed to insert new loan into database");
             }
         } catch (SQLIntegrityConstraintViolationException e) {
-            throw new NoSuchCustomerException(e);
+            throw new NoSuchRecordException("Customer not found", e);
         } catch (SQLException e) {
             throw new DatabaseConnectionException("Failed to approve new loan", e);
         }
     }
 
     @Override
-    public DTOLoan updateLoan(DTOLoan loan, double newInterestRate, LocalDate newDeadline) throws DatabaseConnectionException, NoSuchLoanException {
+    public DTOLoan updateLoan(DTOLoan loan, double newInterestRate, LocalDate newDeadline) throws DatabaseConnectionException, NoSuchRecordException {
         String updateQuery = "UPDATE loan_data SET interest_rate = ?, deadline = ? WHERE id = ?";
         try (Connection coon = getConnection();
              PreparedStatement ps = coon.prepareStatement(updateQuery)) {
@@ -182,7 +182,7 @@ public class VRepository implements Repository {
             if (affectedRows > 0) {
                 return loan.updated(newInterestRate, newDeadline);
             } else {
-                throw new NoSuchLoanException();
+                throw new NoSuchRecordException("Loan not found");
             }
         } catch (SQLException e) {
             throw new DatabaseConnectionException(e);
@@ -206,7 +206,7 @@ public class VRepository implements Repository {
     }
 
     @Override
-    public Collection<DTOAccount> getAccountData(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException {
+    public Collection<DTOAccount> getAccountData(DTOCustomer customer) throws DatabaseConnectionException, NoSuchRecordException {
         int customerId = customer.getCustomerId();
         String accountQuery = "SELECT id, balance, interest_rate " +
                 "FROM account_data WHERE owner_id = ?";
@@ -225,7 +225,7 @@ public class VRepository implements Repository {
     }
 
     @Override
-    public Collection<DTOLoan> getLoanData(DTOCustomer customer) throws DatabaseConnectionException, NoSuchCustomerException {
+    public Collection<DTOLoan> getLoanData(DTOCustomer customer) throws DatabaseConnectionException, NoSuchRecordException {
         int customerId = customer.getCustomerId();
         String loanQuery = "SELECT id, original_amount, granted, interest_rate FROM loan_data WHERE debtor_id = ?";
         List<DTOLoan> loans = new ArrayList<>();
@@ -248,7 +248,7 @@ public class VRepository implements Repository {
     }
 
     @Override
-    public Collection<DTOTransaction> getTransactionHistory(DTOAccount account) throws DatabaseConnectionException, NoSuchAccountException {
+    public Collection<DTOTransaction> getTransactionHistory(DTOAccount account) throws DatabaseConnectionException, NoSuchRecordException {
         int accountId = account.getAccountId();
         String transactionQuery = "SELECT id, net_balance, transaction_time " +
                 "FROM transaction_data WHERE account_id = ?";

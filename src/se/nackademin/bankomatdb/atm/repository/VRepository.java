@@ -66,7 +66,7 @@ public class VRepository implements ATMRepository {
     }
 
     @Override
-    public List<DTOTransaction> getTransactionHistory(int accountId) throws DatabaseConnectionException, NoSuchAccountException {
+    public List<DTOTransaction> getTransactionHistory(int accountId) throws DatabaseConnectionException, NoSuchRecordException {
         List<DTOTransaction> transactions = new ArrayList<>();
         String transactionQuery = "SELECT id, net_balance, transaction_time " +
                 "FROM transaction_data WHERE account_id = ?";
@@ -105,7 +105,7 @@ public class VRepository implements ATMRepository {
 
     // TODO
     @Override
-    public boolean withdraw(int accountId, int amount) throws DatabaseConnectionException, InsufficientFundsException, NoSuchAccountException {
+    public boolean withdraw(int accountId, int amount) throws DatabaseConnectionException, InsufficientFundsException, NoSuchRecordException {
         if (amount < 0) {
             throw new IllegalArgumentException();
         }
@@ -114,13 +114,13 @@ public class VRepository implements ATMRepository {
         PreparedStatement read = conn.prepareStatement("SELECT owner_id, balance, interest_rate FROM account_data WHERE id = ?")) {
             int affectedRows = update.executeUpdate();
             if (affectedRows == 0) {
-                throw new NoSuchAccountException();
+                throw new NoSuchRecordException("Account number " + accountId + " not found.");
             } else {
                 // Uppdatera saldo med nytt kontoobjekt?
                 return true;
             }
         } catch (SQLIntegrityConstraintViolationException e) {
-            return false;
+            throw new InsufficientFundsException();
         } catch (SQLException e) {
             throw new DatabaseConnectionException(e);
         }

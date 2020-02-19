@@ -2,7 +2,7 @@ package se.nackademin.bankomatdb.atm.View;
 
 import se.nackademin.bankomatdb.DatabaseConnectionException;
 import se.nackademin.bankomatdb.InsufficientFundsException;
-import se.nackademin.bankomatdb.NoSuchAccountException;
+import se.nackademin.bankomatdb.NoSuchRecordException;
 import se.nackademin.bankomatdb.atm.controller.Controller;
 import se.nackademin.bankomatdb.model.DTOAccount;
 
@@ -69,7 +69,7 @@ public class KontonView extends JFrame {
         try {
             System.out.println("Kontohistorik för kontonummer " + account.getAccountId() + ":");
             controller.getTransactionHistory(account).forEach(t -> System.out.println(t.toString()));
-        } catch (DatabaseConnectionException | NoSuchAccountException e) {
+        } catch (DatabaseConnectionException | NoSuchRecordException e) {
             e.printStackTrace();
         }
     }
@@ -90,7 +90,7 @@ public class KontonView extends JFrame {
             } else {
                 // uttag misslyckades utan felsignal
             }
-        } catch (NoSuchAccountException | DatabaseConnectionException | InsufficientFundsException e) {
+        } catch (NoSuchRecordException | DatabaseConnectionException | InsufficientFundsException e) {
             e.printStackTrace();
         }
     }

@@ -32,7 +32,7 @@ public class Controller {
         return repository.getCustomerAccounts(getCurrentCustomer().getCustomerId());
     }
 
-    public Collection<DTOTransaction> getTransactionHistory(DTOAccount account) throws DatabaseConnectionException, NoSuchAccountException {
+    public Collection<DTOTransaction> getTransactionHistory(DTOAccount account) throws DatabaseConnectionException, NoSuchRecordException {
         return repository.getTransactionHistory(account.getAccountId());
     }
 
@@ -62,7 +62,7 @@ public class Controller {
     }
 
     // Returnerar true oom uttaget lyckades, precis som i Repository
-    public boolean withdraw(DTOAccount account, int amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchAccountException {
+    public boolean withdraw(DTOAccount account, int amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchRecordException {
         if (amount > account.getBalance()) {
             throw new InsufficientFundsException();
         }

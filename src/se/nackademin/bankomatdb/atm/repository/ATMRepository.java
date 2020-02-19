@@ -16,7 +16,7 @@ public interface ATMRepository {
     List<DTOLoan> getCustomerLoans(int customerId) throws DatabaseConnectionException;
 
     // Kontot tillhör inte kunden?
-    List<DTOTransaction> getTransactionHistory(int accountId) throws DatabaseConnectionException, NoSuchAccountException;
+    List<DTOTransaction> getTransactionHistory(int accountId) throws DatabaseConnectionException, NoSuchRecordException;
 
     // Kan behöva ses över senare. Vad används för identifikation? Är strängar det rätta valet?
     DTOCustomer login(String identification, String pin) throws DatabaseConnectionException, InvalidCredentialsException;
@@ -25,5 +25,5 @@ public interface ATMRepository {
     // Kontanterna lär lagras som flyttal i databasen, men uttag är alltid i hela kronor
     // Kontot tillhör inte kunden?
     // TODO Returnera kontoobjekt istället?
-    boolean withdraw(int accountId, int amount) throws DatabaseConnectionException, InsufficientFundsException, NoSuchAccountException;
+    boolean withdraw(int accountId, int amount) throws DatabaseConnectionException, InsufficientFundsException, NoSuchRecordException;
 }
