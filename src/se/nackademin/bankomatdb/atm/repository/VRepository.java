@@ -110,9 +110,10 @@ public class VRepository implements ATMRepository {
             throw new IllegalArgumentException();
         }
         try (Connection conn = getConnection();
-        PreparedStatement update = conn.prepareStatement("UPDATE account_data SET balance = balance - ? WHERE id = ?");
-        PreparedStatement read = conn.prepareStatement("SELECT owner_id, balance, interest_rate FROM account_data WHERE id = ?")) {
-            int affectedRows = update.executeUpdate();
+        PreparedStatement ps = conn.prepareStatement("UPDATE account_data SET balance = balance - ? WHERE id = ?")) {
+            ps.setDouble(1, amount);
+            ps.setInt(2, accountId);
+            int affectedRows = ps.executeUpdate();
             if (affectedRows == 0) {
                 throw new NoSuchRecordException("Account number " + accountId + " not found.");
             } else {

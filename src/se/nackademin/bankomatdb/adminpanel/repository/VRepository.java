@@ -102,14 +102,72 @@ public class VRepository implements Repository {
 
     // TODO
     @Override
-    public DTOAccount deposit(int accountId, double amount) throws DatabaseConnectionException, NoSuchRecordException {
-        return null;
+    public DTOTransaction deposit(int accountId, double amount) throws DatabaseConnectionException, NoSuchRecordException {
+        if (amount < 0) {
+            throw new IllegalArgumentException();
+        }
+        try (Connection conn = getConnection();
+             PreparedStatement updateStatement = conn.prepareStatement("UPDATE account_data SET balance = balance + ? WHERE id = ?");
+             PreparedStatement readStatement = conn.prepareStatement("SELECT id, account_id, net_balance, transaction_time FROM transaction_data WHERE id = ?")) {
+            updateStatement.setDouble(1, amount);
+            updateStatement.setInt(2, accountId);
+            int affectedRows = updateStatement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new NoSuchRecordException("Account number " + accountId + " not found.");
+            } else {
+                ResultSet rs = updateStatement.getGeneratedKeys();
+                rs.next();
+                int transactionId = rs.getInt("id");
+                readStatement.setInt(1, transactionId);
+                rs = readStatement.executeQuery();
+                if (rs.next()) {
+                    return new DTOTransaction(rs.getInt("id"),
+                            rs.getInt("account_id"),
+                            rs.getDouble("net_balance"),
+                            rs.getTimestamp("transaction_time").toLocalDateTime());
+                } else {
+                    throw new NoSuchRecordException("No transaction entry generated");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseConnectionException(e);
+        }
     }
 
     // TODO
     @Override
-    public DTOAccount withdraw(int accountId, double amount) throws DatabaseConnectionException, NoSuchRecordException, InsufficientFundsException {
-        return null;
+    public DTOTransaction withdraw(int accountId, double amount) throws DatabaseConnectionException, NoSuchRecordException, InsufficientFundsException {
+        if (amount < 0) {
+            throw new IllegalArgumentException();
+        }
+        try (Connection conn = getConnection();
+             PreparedStatement updateStatement = conn.prepareStatement("UPDATE account_data SET balance = balance - ? WHERE id = ?");
+             PreparedStatement readStatement = conn.prepareStatement("SELECT id, account_id, net_balance, transaction_time FROM transaction_data WHERE id = ?")) {
+            updateStatement.setDouble(1, amount);
+            updateStatement.setInt(2, accountId);
+            int affectedRows = updateStatement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new NoSuchRecordException("Account number " + accountId + " not found.");
+            } else {
+                ResultSet rs = updateStatement.getGeneratedKeys();
+                rs.next();
+                int transactionId = rs.getInt("id");
+                readStatement.setInt(1, transactionId);
+                rs = readStatement.executeQuery();
+                if (rs.next()) {
+                    return new DTOTransaction(rs.getInt("id"),
+                            rs.getInt("account_id"),
+                            rs.getDouble("net_balance"),
+                            rs.getTimestamp("transaction_time").toLocalDateTime());
+                } else {
+                    throw new NoSuchRecordException("No transaction entry generated");
+                }
+            }
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new InsufficientFundsException(e);
+        } catch (SQLException e) {
+            throw new DatabaseConnectionException(e);
+        }
     }
 
     @Override

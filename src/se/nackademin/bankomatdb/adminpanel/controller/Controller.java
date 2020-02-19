@@ -80,13 +80,17 @@ public class Controller {
     void deposit(DTOAccount account, double amount) throws DatabaseConnectionException, NoSuchRecordException {
         if (amount < 0)
             throw new IllegalArgumentException("Attempting to deposit a negative amount");
-        repository.deposit(account.getAccountId(), amount);
+        DTOTransaction finishedTransaction = repository.deposit(account.getAccountId(), amount);
+        accounts.put(account.getAccountId(), account.afterTransaction(amount));
+        transactions.get(account.getAccountId()).add(finishedTransaction);
     }
 
     void withdraw(DTOAccount account, double amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchRecordException {
         if (amount < 0)
             throw new IllegalArgumentException("Attempting to withdraw a negative amount");
-        repository.withdraw(account.getAccountId(), -amount);
+        DTOTransaction finishedTransaction = repository.withdraw(account.getAccountId(), amount);
+        accounts.put(account.getAccountId(), account.afterTransaction(-amount));
+        transactions.get(account.getAccountId()).add(finishedTransaction);
     }
 
     DTOAccount updateInterestRate(DTOAccount account, double newRate) throws DatabaseConnectionException, NoSuchRecordException {

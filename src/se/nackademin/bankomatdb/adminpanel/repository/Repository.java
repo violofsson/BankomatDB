@@ -29,9 +29,9 @@ public interface Repository {
 
     boolean closeAccount(int accountId) throws DatabaseConnectionException;
 
-    DTOAccount deposit(int accountId, double amount) throws DatabaseConnectionException, NoSuchRecordException;
+    DTOTransaction deposit(int accountId, double amount) throws DatabaseConnectionException, NoSuchRecordException;
 
-    DTOAccount withdraw(int accountId, double amount) throws DatabaseConnectionException, NoSuchRecordException, InsufficientFundsException;
+    DTOTransaction withdraw(int accountId, double amount) throws DatabaseConnectionException, NoSuchRecordException, InsufficientFundsException;
 
     // Ogiltig ränta
     DTOAccount setAccountInterestRate(int accountId, double newInterestRate) throws DatabaseConnectionException, NoSuchRecordException;
