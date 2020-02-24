@@ -22,12 +22,13 @@ public class LåneHanteringView extends JFrame{
         setLayout();
         setLocationAndSize();
         addComponentsToContainer();
+        addActionEvent();
         this.setTitle("Lånehantering");
         this.setSize(410, 215);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
-        this.setVisible(true);
+        this.setVisible(false);
 
     }
 

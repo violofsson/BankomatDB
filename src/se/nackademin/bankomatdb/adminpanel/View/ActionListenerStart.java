@@ -18,6 +18,8 @@ public class ActionListenerStart implements ActionListener {
     private JButton hanteraKontoButton;
     private JComboBox hanteraLånComboBox;
     private JButton hanteraLånButton;
+    private KontoHanteringView kontoHanteringView = new KontoHanteringView();
+    private LåneHanteringView låneHanteringView = new LåneHanteringView();
 
     ActionListenerStart(JTextField läggTillKundTextField, JButton läggTillKundButton, JComboBox raderaKundComboBox,
                         JButton raderaKundButton, JTextField skapaKontoTextField, JButton skapaKontoButton,
@@ -55,11 +57,12 @@ public class ActionListenerStart implements ActionListener {
         }else if (e.getSource() == hanteraKontoComboBox) {
 
         }else if (e.getSource() == hanteraKontoButton) {
+            kontoHanteringView.setVisible(true);
 
         }else if (e.getSource() == hanteraLånComboBox) {
 
         }else if (e.getSource() == hanteraLånButton) {
-
+            låneHanteringView.setVisible(true);
         }
 
     }

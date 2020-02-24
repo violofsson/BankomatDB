@@ -32,6 +32,7 @@ public class StartView extends JFrame{
         setLayout();
         setLocationAndSize();
         addComponentsToContainer();
+        addActionEvent();
         this.setTitle("Bankombud");
         this.setSize(410, 300);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
