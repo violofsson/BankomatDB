@@ -9,13 +9,13 @@ import java.util.HashMap;
 public class KontonView extends JFrame {
 
     private Container container = getContentPane();
-    private JLabel väljKontoLabel = new JLabel("Välj konto");
-    private JComboBox<String> konton = new JComboBox<>();
-    private JButton taUt = new JButton("Ta ut");
-    private JButton seSaldo = new JButton("Se Saldo");
-    private JButton kontoHistorik = new JButton("Kontohistorik");
-    private ActionListenerKonton actionListener = new ActionListenerKonton(konton, taUt, seSaldo, kontoHistorik);
-    private HashMap<String, DTOAccount> kontoLista;
+    private JLabel chooseAccountLabel = new JLabel("Välj konto");
+    private JComboBox<String> accounts = new JComboBox<>();
+    private JButton withdraw = new JButton("Ta ut");
+    private JButton balance = new JButton("Se Saldo");
+    private JButton accountHistory = new JButton("Kontohistorik");
+    private ActionListenerKonton actionListener = new ActionListenerKonton(accounts, withdraw, balance, accountHistory);
+    private HashMap<String, DTOAccount> accountList;
 
     KontonView() {
         setLayout();
@@ -37,34 +37,34 @@ public class KontonView extends JFrame {
     }
 
     public void setLocationAndSize() {
-        väljKontoLabel.setBounds(40, 20, 125, 30);
-        väljKontoLabel.setFont(new Font("Serif", Font.BOLD, 17));
-        konton.setBounds(150, 23, 125, 30);
-        taUt.setBounds(40, 80, 100, 30);
-        seSaldo.setBounds(150, 80, 100, 30);
-        kontoHistorik.setBounds(260, 80, 100, 30);
+        chooseAccountLabel.setBounds(40, 20, 125, 30);
+        chooseAccountLabel.setFont(new Font("Serif", Font.BOLD, 17));
+        accounts.setBounds(150, 23, 125, 30);
+        withdraw.setBounds(40, 80, 100, 30);
+        balance.setBounds(150, 80, 100, 30);
+        accountHistory.setBounds(260, 80, 100, 30);
 
     }
 
     public void addComponentsToContainer() {
-        container.add(väljKontoLabel);
-        container.add(konton);
-        container.add(taUt);
-        container.add(seSaldo);
-        container.add(kontoHistorik);
+        container.add(chooseAccountLabel);
+        container.add(accounts);
+        container.add(withdraw);
+        container.add(balance);
+        container.add(accountHistory);
     }
 
     public void addActionEvent() {
-        konton.addActionListener(actionListener);
-        taUt.addActionListener(actionListener);
-        seSaldo.addActionListener(actionListener);
-        kontoHistorik.addActionListener(actionListener);
+        accounts.addActionListener(actionListener);
+        withdraw.addActionListener(actionListener);
+        balance.addActionListener(actionListener);
+        accountHistory.addActionListener(actionListener);
     }
 
     public void fillComboBox() {
         //Fyll hashmapen (kontoLista) med Kontonamn och Konton
-        for (String kontoNamn : kontoLista.keySet()) {
-            konton.addItem(kontoNamn);
+        for (String kontoNamn : accountList.keySet()) {
+            accounts.addItem(kontoNamn);
         }
     }
 }
