@@ -32,6 +32,6 @@ public final class DTOAccount {
 
     @Override
     public String toString() {
-        return String.format("Kontonummer %d, räntesats %f%%, saldo %.2f", id, interestRate, balance);
+        return String.format("Kontonummer %d, räntesats %.2f%%, saldo %.2f", id, interestRate, balance);
     }
 }

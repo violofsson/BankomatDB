@@ -12,19 +12,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.IllegalFormatException;
 
 public class LoanView extends JPanel {
+    private JFrame parentFrame;
     private Controller controller;
     private DTOCustomer currentCustomer;
     private JComboBox<DTOLoan> loanSelector = new JComboBox<>();
     private JButton newLoanButton = new JButton("Bevilja nytt lån");
     private JButton updateLoanButton = new JButton("Uppdatera valt lån");
 
-    LoanView(Controller c) {
-        this.controller = c;
+    LoanView(JFrame parentFrame, Controller controller) {
+        this.parentFrame = parentFrame;
+        this.controller = controller;
         setLayout(this);
         addActionListeners();
-        this.setVisible(true);
+        reloadLoans(null);
     }
 
     void reloadLoans(DTOCustomer customer) {
@@ -33,6 +36,7 @@ public class LoanView extends JPanel {
         loanSelector.setEnabled(false);
         newLoanButton.setEnabled(false);
         updateLoanButton.setEnabled(false);
+        if (currentCustomer == null) return;
         try {
             Collection<DTOLoan> loans = controller.getCustomerLoans(currentCustomer);
             newLoanButton.setEnabled(true);
@@ -60,9 +64,11 @@ public class LoanView extends JPanel {
 
     void approveLoan() {
         try {
-            ApproveLoanDialog dialog = new ApproveLoanDialog((Frame) SwingUtilities.getWindowAncestor(this), currentCustomer.getCustomerId());
+            ApproveLoanDialog dialog = new ApproveLoanDialog(parentFrame, currentCustomer.getCustomerId());
             Triplet<Double, Double, LocalDate> input = dialog.run();
             controller.approveLoan(currentCustomer, input.getValue0(), input.getValue1(), input.getValue2());
+        } catch (NullPointerException | NumberFormatException | IllegalFormatException e) {
+            // TODO
         } catch (InvalidInsertException | NoSuchRecordException | DatabaseConnectionException e) {
             // TODO
         }
@@ -75,7 +81,7 @@ public class LoanView extends JPanel {
     void updateLoan() {
         try {
             DTOLoan currentLoan = getSelectedLoan();
-            UpdateLoanDialog dialog = new UpdateLoanDialog((Frame) SwingUtilities.getWindowAncestor(this), currentLoan);
+            UpdateLoanDialog dialog = new UpdateLoanDialog(parentFrame, currentLoan);
             DTOLoan updatedLoan = dialog.run();
             if (!currentLoan.equals(updatedLoan)) {
                 controller.updateLoan(currentLoan, updatedLoan.getInterestRate(), updatedLoan.getPaymentDeadline());

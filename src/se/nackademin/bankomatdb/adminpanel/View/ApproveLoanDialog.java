@@ -19,6 +19,8 @@ public class ApproveLoanDialog extends JDialog {
         super(parent, "Bevilja lån", true);
         this.debtorId = debtorId;
         setLayout(this.getContentPane());
+        this.setLocationRelativeTo(parent);
+        this.pack();
     }
 
     Triplet<Double, Double, LocalDate> run() {
@@ -41,7 +43,7 @@ public class ApproveLoanDialog extends JDialog {
     }
 
     void setLayout(Container container) {
-        container.setLayout(new FlowLayout());
+        container.setLayout(new GridLayout(0, 2));
         container.add(new JLabel("Lånebelopp"));
         container.add(loanedAmountField);
         container.add(new JLabel("Ränta"));

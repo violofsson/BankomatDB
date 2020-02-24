@@ -11,6 +11,7 @@ import java.awt.*;
 import java.util.Collection;
 
 public class AccountView extends JPanel {
+    private JFrame parentFrame;
     private Controller controller;
     private DTOCustomer currentCustomer;
     private JComboBox<DTOAccount> accountSelect = new JComboBox<>();
@@ -21,10 +22,12 @@ public class AccountView extends JPanel {
     private JButton interestRateButton = new JButton("Sätt ny ränta");
     private JButton transactionHistoryButton = new JButton("Visa transaktionshistorik");
 
-    AccountView(Controller c) {
+    AccountView(JFrame parent, Controller c) {
         super();
+        this.parentFrame = parent;
         this.controller = c;
         setLayout(this);
+        reloadAccounts(null);
     }
 
     DTOAccount getSelectedAccount() {

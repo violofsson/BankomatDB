@@ -22,10 +22,12 @@ class UpdateLoanDialog extends JDialog {
         resetFields();
         setLayout(this.getContentPane());
         setActionListeners();
+        setLocationRelativeTo(parent);
+        this.pack();
     }
 
     void resetFields() {
-        this.newDeadline.setText(originalLoan.getPaymentDeadline().format(DateTimeFormatter.BASIC_ISO_DATE));
+        this.newDeadline.setText(originalLoan.getPaymentDeadline().format(DateTimeFormatter.ISO_DATE));
         this.newInterest.setText(String.valueOf(originalLoan.getInterestRate()));
     }
 
@@ -49,7 +51,7 @@ class UpdateLoanDialog extends JDialog {
     }
 
     void setLayout(Container container) {
-        container.setLayout(new FlowLayout());
+        container.setLayout(new GridLayout(0, 2));
         container.add(new JLabel("Ny betalplan"));
         container.add(newDeadline);
         container.add(new JLabel("Ny räntesats"));
