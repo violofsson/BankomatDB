@@ -18,7 +18,7 @@ public class ActionListenerLogin extends JFrame implements ActionListener {
     private LoginView loginView;
     private Controller controller = new Controller();
 
-    ActionListenerLogin(JTextField idField,JPasswordField passwordField, JButton loginButton, JButton resetButton, LoginView loginView) {
+    ActionListenerLogin(JTextField idField, JPasswordField passwordField, JButton loginButton, JButton resetButton, LoginView loginView) {
         this.idField = idField;
         this.passwordField = passwordField;
         this.loginButton = loginButton;
@@ -31,17 +31,17 @@ public class ActionListenerLogin extends JFrame implements ActionListener {
 
         if (e.getSource() == loginButton) {
             try {
-                if (controller.login(idField.getText(), String.valueOf(passwordField.getPassword()))){
+                if (controller.login(idField.getText(), String.valueOf(passwordField.getPassword()))) {
                     loginView.setVisible(false);
                     kontonView.setVisible(true);
-                }else {
+                } else {
                     JOptionPane.showMessageDialog(null, "Fel inloggning");
                 }
             } catch (DatabaseConnectionException | AlreadyLoggedInException ex) {
                 ex.printStackTrace();
             }
 
-        }else if (e.getSource() == resetButton) {
+        } else if (e.getSource() == resetButton) {
             passwordField.setText("");
         }
     }

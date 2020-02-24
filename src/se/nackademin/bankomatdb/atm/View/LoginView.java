@@ -26,12 +26,10 @@ public class LoginView extends JFrame {
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         this.setVisible(true);
-
     }
 
     public void setLayout() {
         container.setLayout(null);
-
     }
 
     public void setLocationAndSize() {
@@ -45,7 +43,6 @@ public class LoginView extends JFrame {
         passwordField.setBounds(130, 110, 100, 30);
         resetButton.setBounds(73, 160, 70, 30);
         loginButton.setBounds(173, 160, 70, 30);
-
     }
 
     public void addComponentsToContainer() {
