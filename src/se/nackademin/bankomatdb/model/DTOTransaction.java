@@ -1,6 +1,7 @@
 package se.nackademin.bankomatdb.model;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public final class DTOTransaction {
     private final int id;
@@ -30,5 +31,12 @@ public final class DTOTransaction {
 
     public LocalDateTime getTransactionTime() {
         return LocalDateTime.from(transactionTime);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Transakton %d från konto %d vid %s, %s%.2f kr",
+                id, accountId, transactionTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                (netBalance >= 0 ? "+" : ""), netBalance);
     }
 }

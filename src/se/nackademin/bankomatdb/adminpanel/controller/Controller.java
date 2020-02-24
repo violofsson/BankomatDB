@@ -63,21 +63,21 @@ public class Controller {
     }
 
     // TODO Mappa till vymodell
-    Collection<DTOCustomer> getCustomers() throws DatabaseConnectionException {
+    public Collection<DTOCustomer> getCustomers() throws DatabaseConnectionException {
         return repository.getCustomerData()
                 .stream()
                 .sorted(Comparator.comparingInt(DTOCustomer::getCustomerId))
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    Collection<DTOAccount> getCustomerAccounts(DTOCustomer customer) throws DatabaseConnectionException, NoSuchRecordException {
+    public Collection<DTOAccount> getCustomerAccounts(DTOCustomer customer) throws DatabaseConnectionException, NoSuchRecordException {
         return repository.getAccountData(customer)
                 .stream()
                 .sorted(Comparator.comparingInt(DTOAccount::getAccountId))
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    Collection<DTOLoan> getCustomerLoans(DTOCustomer customer) throws DatabaseConnectionException, NoSuchRecordException {
+    public Collection<DTOLoan> getCustomerLoans(DTOCustomer customer) throws DatabaseConnectionException, NoSuchRecordException {
         return repository.getLoanData(customer)
                 .stream()
                 .sorted(Comparator.comparingInt(DTOLoan::getLoanId))

@@ -8,6 +8,7 @@ public class Main {
 
     Main() throws DatabaseConnectionException {
         this.controller = new Controller();
+        new StartView(controller);
     }
 
     public static void main(String[] args) {

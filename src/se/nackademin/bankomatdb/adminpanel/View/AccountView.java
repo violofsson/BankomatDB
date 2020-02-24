@@ -1,78 +1,71 @@
 package se.nackademin.bankomatdb.adminpanel.View;
 
+import se.nackademin.bankomatdb.DatabaseConnectionException;
+import se.nackademin.bankomatdb.NoSuchRecordException;
 import se.nackademin.bankomatdb.adminpanel.controller.Controller;
+import se.nackademin.bankomatdb.model.DTOAccount;
+import se.nackademin.bankomatdb.model.DTOCustomer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collection;
 
-public class AccountView extends JFrame{
+public class AccountView extends JPanel {
     private Controller controller;
-    private Container container = getContentPane();
-    private JLabel sättInPengarLabel = new JLabel("Sätt in pengar");
-    private JTextField sättInPengarTextField = new JTextField("Summa");
-    private JButton sättInPengarJbutton = new JButton("Sätt in");
-    private JLabel taUtPengarLabel = new JLabel("Ta ut pengar");
-    private JTextField taUtPengarTextField = new JTextField("Summa");
-    private JButton taUtPengarButton = new JButton("Ta ut");
-    private JLabel ändraRänteSatsLabel = new JLabel("Ändra räntesats");
-    private JTextField ändraRänteSatsTextField = new JTextField("Räntesats");
-    private JButton ändraRänteSatsButton = new JButton("Ändra Ränta");
-    private JLabel kontoHistorikLabel = new JLabel("Visa kontohistorik");
-    private JButton kontoHistorikButton = new JButton("Kontohistorik");
+    private DTOCustomer currentCustomer;
+    private JComboBox<DTOAccount> accountSelect = new JComboBox<>();
+    private JTextField transactionField = new JTextField();
+    private JButton withdrawButton = new JButton("Ta ut");
+    private JButton depositButton = new JButton("Sätt in");
+    private JTextField interestRateField = new JTextField();
+    private JButton interestRateButton = new JButton("Sätt ny ränta");
+    private JButton transactionHistoryButton = new JButton("Visa transaktionshistorik");
 
     AccountView(Controller c) {
+        super();
         this.controller = c;
-        setLayout();
-        setLocationAndSize();
-        addComponentsToContainer();
-        this.setTitle("Kontohantering");
-        this.setSize(410, 215);
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setLocationRelativeTo(null);
-        this.setResizable(false);
-        this.setVisible(true);
-
+        setLayout(this);
     }
 
-    public void setLayout() {
-        container.setLayout(null);
-
+    DTOAccount getSelectedAccount() {
+        return accountSelect.getItemAt(accountSelect.getSelectedIndex());
     }
 
-    public void setLocationAndSize() {
-        sättInPengarLabel.setBounds(20, 10, 110, 30);
-        sättInPengarLabel.setFont(new Font("serif", Font.BOLD, 15));
-        sättInPengarTextField.setBounds(145, 10, 100, 30);
-        sättInPengarJbutton.setBounds(270, 10, 100, 30);
-        taUtPengarLabel.setBounds(20, 50, 100, 30);
-        taUtPengarLabel.setFont(new Font("serif", Font.BOLD, 15));
-        taUtPengarTextField.setBounds(145, 50, 100, 30);
-        taUtPengarButton.setBounds(270, 50, 100, 30);
-        ändraRänteSatsLabel.setBounds(20, 90, 120, 30);
-        ändraRänteSatsLabel.setFont(new Font("serif", Font.BOLD, 15));
-        ändraRänteSatsTextField.setBounds(145, 90, 100, 30);
-        ändraRänteSatsButton.setBounds(270, 90, 100, 30);
-        kontoHistorikLabel.setBounds(20, 130, 140, 30);
-        kontoHistorikLabel.setFont(new Font("serif", Font.BOLD, 15));
-        kontoHistorikButton.setBounds(190, 130, 120, 30);
+    void reloadAccounts(DTOCustomer customer) {
+        this.currentCustomer = customer;
+        accountSelect.removeAllItems();
+        for (Component c : this.getComponents()) {
+            c.setEnabled(false);
+        }
+        if (currentCustomer == null) return;
+        try {
+            Collection<DTOAccount> accounts = controller.getCustomerAccounts(currentCustomer);
+            if (!accounts.isEmpty()) {
+                accounts.forEach(accountSelect::addItem);
+                for (Component c : this.getComponents()) {
+                    c.setEnabled(true);
+                }
+            }
+        } catch (NoSuchRecordException | DatabaseConnectionException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void addComponentsToContainer() {
-        container.add(sättInPengarLabel);
-        container.add(sättInPengarTextField);
-        container.add(sättInPengarJbutton);
-        container.add(taUtPengarLabel);
-        container.add(taUtPengarTextField);
-        container.add(taUtPengarButton);
-        container.add(ändraRänteSatsLabel);
-        container.add(ändraRänteSatsTextField);
-        container.add(ändraRänteSatsButton);
-        container.add(kontoHistorikLabel);
-        container.add(kontoHistorikButton);
-
+    public void setLayout(Container container) {
+        container.setLayout(new FlowLayout());
+        container.add(new JLabel("Välj konto"));
+        container.add(accountSelect);
+        container.add(new JLabel("Ta ut/sätt in"));
+        container.add(new JLabel("Ny räntesats"));
+        container.add(interestRateField);
+        container.add(interestRateButton);
+        container.add(transactionField);
+        container.add(withdrawButton);
+        container.add(depositButton);
+        container.add(transactionHistoryButton);
     }
 
-    public void addActionEvent() {
+    public void addActionListeners() {
 
     }
 }

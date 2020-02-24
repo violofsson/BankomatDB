@@ -32,4 +32,9 @@ public final class DTOCustomer {
     public DTOCustomer updated(String newName, String newPin) {
         return new DTOCustomer(this.getCustomerId(), newName, this.getPersonalId(), newPin);
     }
+
+    @Override
+    public String toString() {
+        return String.format("Kundnummer %d, %s %s", id, personalId, name);
+    }
 }

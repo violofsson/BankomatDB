@@ -1,6 +1,7 @@
 package se.nackademin.bankomatdb.model;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public final class DTOLoan {
@@ -57,5 +58,12 @@ public final class DTOLoan {
                 newInterestRate,
                 this.grantedOn(),
                 newDeadline);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Lån %d, lånade %.2f %s, %.2f ränta, %.2f betalas %s",
+                id, originalLoan, granted.format(DateTimeFormatter.ISO_DATE),
+                interestRate, getFinalPayment(), deadline.format(DateTimeFormatter.ISO_DATE));
     }
 }

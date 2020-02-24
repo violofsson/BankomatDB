@@ -4,15 +4,13 @@ import se.nackademin.bankomatdb.model.DTOLoan;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 class UpdateLoanDialog extends JDialog {
     private DTOLoan originalLoan;
     private DTOLoan newLoan;
-    private JLabel deadlineLabel = new JLabel("Ny betalplan");
     private JTextField newDeadline = new JTextField();
-    private JLabel interestRateLabel = new JLabel("Ny räntesats");
     private JTextField newInterest = new JTextField();
     private JButton confirmButton = new JButton("Bekräfta ändring");
     private JButton resetButton = new JButton("Återställ");
@@ -27,7 +25,7 @@ class UpdateLoanDialog extends JDialog {
     }
 
     void resetFields() {
-        this.newDeadline.setText(originalLoan.getPaymentDeadline().toString());
+        this.newDeadline.setText(originalLoan.getPaymentDeadline().format(DateTimeFormatter.BASIC_ISO_DATE));
         this.newInterest.setText(String.valueOf(originalLoan.getInterestRate()));
     }
 
@@ -47,20 +45,16 @@ class UpdateLoanDialog extends JDialog {
                 // TODO Meddela felaktig inmatning
             }
         });
-        resetButton.addActionListener(this::actionPerformed);
+        resetButton.addActionListener(ae -> this.resetFields());
     }
 
     void setLayout(Container container) {
         container.setLayout(new FlowLayout());
-        container.add(deadlineLabel);
+        container.add(new JLabel("Ny betalplan"));
         container.add(newDeadline);
-        container.add(interestRateLabel);
+        container.add(new JLabel("Ny räntesats"));
         container.add(newInterest);
         container.add(confirmButton);
         container.add(resetButton);
-    }
-
-    private void actionPerformed(ActionEvent ae) {
-        resetFields();
     }
 }

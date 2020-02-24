@@ -20,7 +20,7 @@ public class VRepository implements Repository {
     public VRepository() throws DatabaseConnectionException {
         try {
             connectionProperties.load(new FileInputStream("src/se/nackademin/bankomatdb/VConnection.properties"));
-            //Class.forName("com.mysql.jdbc.Driver");
+            //Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (Exception e) {
             throw new DatabaseConnectionException(e);
         }
@@ -274,7 +274,7 @@ public class VRepository implements Repository {
     @Override
     public Collection<DTOLoan> getLoanData(DTOCustomer customer) throws DatabaseConnectionException, NoSuchRecordException {
         int customerId = customer.getCustomerId();
-        String loanQuery = "SELECT id, original_amount, granted, interest_rate FROM loan_data WHERE debtor_id = ?";
+        String loanQuery = "SELECT id, original_amount, granted, interest_rate, deadline FROM loan_data WHERE debtor_id = ?";
         List<DTOLoan> loans = new ArrayList<>();
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(loanQuery)) {
