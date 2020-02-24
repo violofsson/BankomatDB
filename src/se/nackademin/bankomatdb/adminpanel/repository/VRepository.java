@@ -19,8 +19,8 @@ public class VRepository implements Repository {
 
     public VRepository() throws DatabaseConnectionException {
         try {
-            connectionProperties.load(new FileInputStream("src/se/nackademin/VConnection.properties"));
-            Class.forName("com.mysql.jdbc.Driver");
+            connectionProperties.load(new FileInputStream("src/se/nackademin/bankomatdb/VConnection.properties"));
+            //Class.forName("com.mysql.jdbc.Driver");
         } catch (Exception e) {
             throw new DatabaseConnectionException(e);
         }

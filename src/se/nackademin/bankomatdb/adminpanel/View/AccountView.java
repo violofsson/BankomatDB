@@ -1,10 +1,12 @@
 package se.nackademin.bankomatdb.adminpanel.View;
 
+import se.nackademin.bankomatdb.adminpanel.controller.Controller;
+
 import javax.swing.*;
 import java.awt.*;
 
-public class KontoHanteringView extends JFrame{
-
+public class AccountView extends JFrame{
+    private Controller controller;
     private Container container = getContentPane();
     private JLabel sättInPengarLabel = new JLabel("Sätt in pengar");
     private JTextField sättInPengarTextField = new JTextField("Summa");
@@ -18,7 +20,8 @@ public class KontoHanteringView extends JFrame{
     private JLabel kontoHistorikLabel = new JLabel("Visa kontohistorik");
     private JButton kontoHistorikButton = new JButton("Kontohistorik");
 
-    KontoHanteringView() {
+    AccountView(Controller c) {
+        this.controller = c;
         setLayout();
         setLocationAndSize();
         addComponentsToContainer();
@@ -38,19 +41,19 @@ public class KontoHanteringView extends JFrame{
 
     public void setLocationAndSize() {
         sättInPengarLabel.setBounds(20, 10, 110, 30);
-        sättInPengarLabel.setFont(new Font("sherif", Font.BOLD, 15));
+        sättInPengarLabel.setFont(new Font("serif", Font.BOLD, 15));
         sättInPengarTextField.setBounds(145, 10, 100, 30);
         sättInPengarJbutton.setBounds(270, 10, 100, 30);
         taUtPengarLabel.setBounds(20, 50, 100, 30);
-        taUtPengarLabel.setFont(new Font("sherif", Font.BOLD, 15));
+        taUtPengarLabel.setFont(new Font("serif", Font.BOLD, 15));
         taUtPengarTextField.setBounds(145, 50, 100, 30);
         taUtPengarButton.setBounds(270, 50, 100, 30);
         ändraRänteSatsLabel.setBounds(20, 90, 120, 30);
-        ändraRänteSatsLabel.setFont(new Font("sherif", Font.BOLD, 15));
+        ändraRänteSatsLabel.setFont(new Font("serif", Font.BOLD, 15));
         ändraRänteSatsTextField.setBounds(145, 90, 100, 30);
         ändraRänteSatsButton.setBounds(270, 90, 100, 30);
         kontoHistorikLabel.setBounds(20, 130, 140, 30);
-        kontoHistorikLabel.setFont(new Font("sherif", Font.BOLD, 15));
+        kontoHistorikLabel.setFont(new Font("serif", Font.BOLD, 15));
         kontoHistorikButton.setBounds(190, 130, 120, 30);
     }
 

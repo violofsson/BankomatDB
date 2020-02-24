@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class Controller {
     Repository repository;
 
-    Controller() throws DatabaseConnectionException {
+    public Controller() throws DatabaseConnectionException {
         this.repository = new VRepository();
     }
 
@@ -54,11 +54,11 @@ public class Controller {
         return repository.setAccountInterestRate(account.getAccountId(), newRate);
     }
 
-    DTOLoan approveLoan(DTOCustomer customer, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, NoSuchRecordException, InvalidInsertException {
+    public DTOLoan approveLoan(DTOCustomer customer, double sum, double interestRate, LocalDate deadline) throws DatabaseConnectionException, NoSuchRecordException, InvalidInsertException {
         return repository.approveLoan(customer.getCustomerId(), sum, interestRate, deadline);
     }
 
-    DTOLoan updateLoan(DTOLoan loan, double newInterestRate, LocalDate newDeadline) throws DatabaseConnectionException, NoSuchRecordException {
+    public DTOLoan updateLoan(DTOLoan loan, double newInterestRate, LocalDate newDeadline) throws DatabaseConnectionException, NoSuchRecordException {
         return repository.updateLoan(loan, newInterestRate, newDeadline);
     }
 
