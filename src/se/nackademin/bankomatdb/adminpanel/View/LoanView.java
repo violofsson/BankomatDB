@@ -50,14 +50,14 @@ public class LoanView extends JPanel {
         }
     }
 
-    public void setLayout(Container container) {
+    void setLayout(Container container) {
         container.setLayout(new FlowLayout());
         container.add(newLoanButton);
         container.add(loanSelector);
         container.add(updateLoanButton);
     }
 
-    public void addActionListeners() {
+    void addActionListeners() {
         newLoanButton.addActionListener(ae -> this.approveLoan());
         updateLoanButton.addActionListener(ae -> this.updateLoan());
     }
@@ -67,6 +67,7 @@ public class LoanView extends JPanel {
             ApproveLoanDialog dialog = new ApproveLoanDialog(parentFrame, currentCustomer.getCustomerId());
             Triplet<Double, Double, LocalDate> input = dialog.run();
             controller.approveLoan(currentCustomer, input.getValue0(), input.getValue1(), input.getValue2());
+            reloadLoans(currentCustomer);
         } catch (NullPointerException | NumberFormatException | IllegalFormatException e) {
             // TODO
         } catch (InvalidInsertException | NoSuchRecordException | DatabaseConnectionException e) {
@@ -85,6 +86,7 @@ public class LoanView extends JPanel {
             DTOLoan updatedLoan = dialog.run();
             if (!currentLoan.equals(updatedLoan)) {
                 controller.updateLoan(currentLoan, updatedLoan.getInterestRate(), updatedLoan.getPaymentDeadline());
+                reloadLoans(currentCustomer);
             }
         } catch (NoSuchRecordException | DatabaseConnectionException e) {
             // TODO

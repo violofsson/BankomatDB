@@ -8,6 +8,8 @@ import se.nackademin.bankomatdb.model.DTOCustomer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 
 public class AccountView extends JPanel {
@@ -32,6 +34,14 @@ public class AccountView extends JPanel {
 
     DTOAccount getSelectedAccount() {
         return accountSelect.getItemAt(accountSelect.getSelectedIndex());
+    }
+
+    void printTransactions() {
+        try {
+            controller.getAccountTransactions(getSelectedAccount(), LocalDate.now().minus(1, ChronoUnit.MONTHS)).forEach(t -> System.out.println(t.toString()));
+        } catch (DatabaseConnectionException | NoSuchRecordException e) {
+            e.printStackTrace();
+        }
     }
 
     void reloadAccounts(DTOCustomer customer) {
@@ -69,6 +79,6 @@ public class AccountView extends JPanel {
     }
 
     public void addActionListeners() {
-
+        transactionHistoryButton.addActionListener(ae -> printTransactions());
     }
 }

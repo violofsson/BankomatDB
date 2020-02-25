@@ -2,6 +2,7 @@ package se.nackademin.bankomatdb.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public final class DTOTransaction {
     private final int id;
@@ -36,7 +37,23 @@ public final class DTOTransaction {
     @Override
     public String toString() {
         return String.format("Transakton %d från konto %d vid %s, %s%.2f kr",
-                id, accountId, transactionTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                (netBalance >= 0 ? "+" : ""), netBalance);
+                getTransactionId(), getAccountId(), getTransactionTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                (getBalanceChange() >= 0 ? "+" : ""), getBalanceChange());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DTOTransaction that = (DTOTransaction) o;
+        return getTransactionId() == that.getTransactionId() &&
+                getAccountId() == that.getAccountId() &&
+                Double.compare(that.getBalanceChange(), getBalanceChange()) == 0 &&
+                getTransactionTime().equals(that.getTransactionTime());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTransactionId(), getAccountId(), getBalanceChange(), getTransactionTime());
     }
 }

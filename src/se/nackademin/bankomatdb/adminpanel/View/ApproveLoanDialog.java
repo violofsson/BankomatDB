@@ -14,8 +14,9 @@ public class ApproveLoanDialog extends JDialog {
     JTextField interestRateField = new JTextField();
     JTextField deadlineField = new JTextField();
     JButton confirmButton = new JButton("Bevilja");
+    JButton cancelButton = new JButton("Avbryt");
 
-    ApproveLoanDialog(Frame parent, int debtorId) {
+    ApproveLoanDialog(JFrame parent, int debtorId) {
         super(parent, "Bevilja lån", true);
         this.debtorId = debtorId;
         setLayout(this.getContentPane());
@@ -36,9 +37,14 @@ public class ApproveLoanDialog extends JDialog {
                         Double.parseDouble(interestRateField.getText()),
                         LocalDate.parse(deadlineField.getText()));
                 dispose();
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 // TODO Meddela felaktig inmatning
             }
+        });
+
+        cancelButton.addActionListener(ae -> {
+            input = null;
+            dispose();
         });
     }
 
@@ -51,5 +57,6 @@ public class ApproveLoanDialog extends JDialog {
         container.add(new JLabel("Sista betalningsdag"));
         container.add(deadlineField);
         container.add(confirmButton);
+        container.add(cancelButton);
     }
 }

@@ -20,37 +20,37 @@ public class Controller {
         this.repository = new VRepository();
     }
 
-    DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException, InvalidInsertException {
+    public DTOCustomer addCustomer(String name, String personalId, String pin) throws DatabaseConnectionException, InvalidInsertException {
         return repository.addCustomer(name, personalId, pin);
     }
 
-    DTOCustomer updateCustomer(DTOCustomer customer, String newName, String newPin) throws DatabaseConnectionException, NoSuchRecordException {
+    public DTOCustomer updateCustomer(DTOCustomer customer, String newName, String newPin) throws DatabaseConnectionException, NoSuchRecordException {
         return repository.updateCustomer(customer, newName, newPin);
     }
 
-    boolean deleteCustomer(DTOCustomer customer) throws DatabaseConnectionException, NoSuchRecordException {
+    public boolean deleteCustomer(DTOCustomer customer) throws DatabaseConnectionException, NoSuchRecordException {
         return repository.deleteCustomer(customer.getCustomerId());
     }
 
-    DTOAccount openAccount(DTOCustomer customer, double interestRate) throws DatabaseConnectionException, NoSuchRecordException, InvalidInsertException {
+    public DTOAccount openAccount(DTOCustomer customer, double interestRate) throws DatabaseConnectionException, NoSuchRecordException, InvalidInsertException {
         return repository.openAccount(customer.getCustomerId(), 0, interestRate);
     }
 
-    boolean closeAccount(DTOAccount account) throws DatabaseConnectionException, NoSuchRecordException {
+    public boolean closeAccount(DTOAccount account) throws DatabaseConnectionException, NoSuchRecordException {
         return repository.closeAccount(account.getAccountId());
     }
 
-    DTOAccount deposit(DTOAccount account, double amount) throws DatabaseConnectionException, NoSuchRecordException {
+    public DTOAccount deposit(DTOAccount account, double amount) throws DatabaseConnectionException, NoSuchRecordException {
         if (amount < 0) throw new IllegalArgumentException("Attempting to deposit a negative amount");
         return repository.deposit(account.getAccountId(), amount);
     }
 
-    DTOAccount withdraw(DTOAccount account, double amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchRecordException {
+    public DTOAccount withdraw(DTOAccount account, double amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchRecordException {
         if (amount < 0) throw new IllegalArgumentException("Attempting to withdraw a negative amount");
         return repository.withdraw(account.getAccountId(), amount);
     }
 
-    DTOAccount updateInterestRate(DTOAccount account, double newRate) throws DatabaseConnectionException, NoSuchRecordException {
+    public DTOAccount updateInterestRate(DTOAccount account, double newRate) throws DatabaseConnectionException, NoSuchRecordException {
         return repository.setAccountInterestRate(account.getAccountId(), newRate);
     }
 
@@ -84,7 +84,7 @@ public class Controller {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    Collection<DTOTransaction> getAccountTransactions(DTOAccount account, LocalDate since) throws DatabaseConnectionException, NoSuchRecordException {
+    public Collection<DTOTransaction> getAccountTransactions(DTOAccount account, LocalDate since) throws DatabaseConnectionException, NoSuchRecordException {
         return repository.getTransactionHistory(account)
                 .stream()
                 .filter(t -> !t.getTransactionTime().isBefore(ChronoLocalDateTime.from(since)))

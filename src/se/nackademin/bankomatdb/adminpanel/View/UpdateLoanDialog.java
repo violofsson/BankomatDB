@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.IllegalFormatException;
 
 class UpdateLoanDialog extends JDialog {
     private DTOLoan originalLoan;
@@ -15,7 +16,7 @@ class UpdateLoanDialog extends JDialog {
     private JButton confirmButton = new JButton("Bekräfta ändring");
     private JButton resetButton = new JButton("Återställ");
 
-    UpdateLoanDialog(Frame parent, DTOLoan loan) {
+    UpdateLoanDialog(JFrame parent, DTOLoan loan) {
         super(parent, "Uppdatera lån", true);
         this.originalLoan = loan;
         this.newLoan = loan;
@@ -43,8 +44,11 @@ class UpdateLoanDialog extends JDialog {
                         Double.parseDouble(newInterest.getText()),
                         LocalDate.parse(newDeadline.getText()));
                 dispose();
+            } catch (NullPointerException | NumberFormatException | IllegalFormatException e) {
+                e.printStackTrace();
             } catch (Exception e) {
                 // TODO Meddela felaktig inmatning
+                e.printStackTrace();
             }
         });
         resetButton.addActionListener(ae -> this.resetFields());

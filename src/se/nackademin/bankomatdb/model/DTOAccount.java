@@ -1,5 +1,7 @@
 package se.nackademin.bankomatdb.model;
 
+import java.util.Objects;
+
 public final class DTOAccount {
     private final int id;
     private final int ownerId;
@@ -32,6 +34,22 @@ public final class DTOAccount {
 
     @Override
     public String toString() {
-        return String.format("Kontonummer %d, räntesats %.2f%%, saldo %.2f", id, interestRate, balance);
+        return String.format("Kontonummer %d, räntesats %.2f%%, saldo %.2f", getAccountId(), getInterestRate(), getBalance());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DTOAccount that = (DTOAccount) o;
+        return getAccountId() == that.getAccountId() &&
+                getOwnerId() == that.getOwnerId() &&
+                Double.compare(that.getBalance(), getBalance()) == 0 &&
+                Double.compare(that.getInterestRate(), getInterestRate()) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getAccountId(), getOwnerId(), getBalance(), getInterestRate());
     }
 }

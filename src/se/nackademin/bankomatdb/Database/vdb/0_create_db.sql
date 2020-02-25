@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS account_data
     balance       DOUBLE NOT NULL DEFAULT 0,
     interest_rate DOUBLE NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (owner_id) REFERENCES customer_data (customer_id) ON DELETE CASCADE,
+    FOREIGN KEY (owner_id) REFERENCES customer_data (customer_id) ON DELETE CASCADE ON UPDATE CASCADE,
     CHECK (balance >= 0)
 );
 
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS loan_data
     deadline        DATE   NOT NULL,
     interest_rate   DOUBLE NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (debtor_id) REFERENCES customer_data (customer_id) ON DELETE CASCADE,
+    FOREIGN KEY (debtor_id) REFERENCES customer_data (customer_id) ON DELETE CASCADE ON UPDATE CASCADE,
     CHECK (DATEDIFF(deadline, granted) > 0),
     CHECK (original_amount > 0)
 );
@@ -43,5 +43,5 @@ CREATE TABLE IF NOT EXISTS transaction_data
     net_balance      DOUBLE    NOT NULL,
     transaction_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    FOREIGN KEY (account_id) REFERENCES account_data (id) ON DELETE CASCADE
+    FOREIGN KEY (account_id) REFERENCES account_data (id) ON DELETE CASCADE ON UPDATE CASCADE
 );

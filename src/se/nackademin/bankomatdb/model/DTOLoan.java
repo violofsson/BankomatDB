@@ -3,6 +3,7 @@ package se.nackademin.bankomatdb.model;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 public final class DTOLoan {
     private final int id;
@@ -63,7 +64,25 @@ public final class DTOLoan {
     @Override
     public String toString() {
         return String.format("Lån %d, lånade %.2f %s, %.2f ränta, %.2f betalas %s",
-                id, originalLoan, granted.format(DateTimeFormatter.ISO_DATE),
-                interestRate, getFinalPayment(), deadline.format(DateTimeFormatter.ISO_DATE));
+                getLoanId(), getOriginalLoan(), grantedOn().format(DateTimeFormatter.ISO_DATE),
+                getInterestRate(), getFinalPayment(), getPaymentDeadline().format(DateTimeFormatter.ISO_DATE));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DTOLoan dtoLoan = (DTOLoan) o;
+        return getLoanId() == dtoLoan.getLoanId() &&
+                getDebtorId() == dtoLoan.getDebtorId() &&
+                Double.compare(dtoLoan.getOriginalLoan(), getOriginalLoan()) == 0 &&
+                Double.compare(dtoLoan.getInterestRate(), getInterestRate()) == 0 &&
+                grantedOn().equals(dtoLoan.grantedOn()) &&
+                getPaymentDeadline().equals(dtoLoan.getPaymentDeadline());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getLoanId(), getDebtorId(), getOriginalLoan(), getInterestRate(), grantedOn(), getPaymentDeadline());
     }
 }
