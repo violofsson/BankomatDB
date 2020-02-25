@@ -25,7 +25,6 @@ public class CustomerView extends JPanel {
         this.controller = c;
         setLayout(this);
         addActionListeners();
-        reloadCustomers();
     }
 
     void newCustomer() {
@@ -90,6 +89,7 @@ public class CustomerView extends JPanel {
     }
 
     void addActionListeners() {
+        addCustomerButton.addActionListener(ae -> newCustomer());
         removeCustomerButton.addActionListener(ae -> removeCustomer());
         reloadButton.addActionListener(ae -> reloadCustomers());
     }

@@ -9,7 +9,6 @@ import se.nackademin.bankomatdb.model.DTOLoan;
 import se.nackademin.bankomatdb.model.DTOTransaction;
 
 import java.time.LocalDate;
-import java.time.chrono.ChronoLocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -87,7 +86,7 @@ public class Controller {
     public Collection<DTOTransaction> getAccountTransactions(DTOAccount account, LocalDate since) throws DatabaseConnectionException, NoSuchRecordException {
         return repository.getTransactionHistory(account)
                 .stream()
-                .filter(t -> !t.getTransactionTime().isBefore(ChronoLocalDateTime.from(since)))
+                .filter(t -> !t.getTransactionTime().isBefore(since.atStartOfDay()))
                 .sorted(Comparator.comparingInt(DTOTransaction::getTransactionId))
                 .collect(Collectors.toUnmodifiableList());
     }

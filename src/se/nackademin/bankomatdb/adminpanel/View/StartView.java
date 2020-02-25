@@ -17,6 +17,7 @@ public class StartView extends JFrame {
         this.loanPanel = new LoanView(this, c);
         setLayout(this.getContentPane());
         addActionListeners();
+        customerPanel.reloadCustomers();
         this.setTitle("Bankombud");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);

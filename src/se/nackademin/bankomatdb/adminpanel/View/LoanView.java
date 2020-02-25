@@ -27,7 +27,6 @@ public class LoanView extends JPanel {
         this.controller = controller;
         setLayout(this);
         addActionListeners();
-        reloadLoans(null);
     }
 
     void reloadLoans(DTOCustomer customer) {
@@ -66,8 +65,8 @@ public class LoanView extends JPanel {
         try {
             ApproveLoanDialog dialog = new ApproveLoanDialog(parentFrame, currentCustomer.getCustomerId());
             Triplet<Double, Double, LocalDate> input = dialog.run();
-            controller.approveLoan(currentCustomer, input.getValue0(), input.getValue1(), input.getValue2());
-            reloadLoans(currentCustomer);
+            DTOLoan newLoan = controller.approveLoan(currentCustomer, input.getValue0(), input.getValue1(), input.getValue2());
+            loanSelector.addItem(newLoan);
         } catch (NullPointerException | NumberFormatException | IllegalFormatException e) {
             // TODO
         } catch (InvalidInsertException | NoSuchRecordException | DatabaseConnectionException e) {
@@ -85,8 +84,10 @@ public class LoanView extends JPanel {
             UpdateLoanDialog dialog = new UpdateLoanDialog(parentFrame, currentLoan);
             DTOLoan updatedLoan = dialog.run();
             if (!currentLoan.equals(updatedLoan)) {
-                controller.updateLoan(currentLoan, updatedLoan.getInterestRate(), updatedLoan.getPaymentDeadline());
-                reloadLoans(currentCustomer);
+                updatedLoan = controller.updateLoan(currentLoan, updatedLoan.getInterestRate(), updatedLoan.getPaymentDeadline());
+                int selectedIndex = loanSelector.getSelectedIndex();
+                loanSelector.removeItemAt(selectedIndex);
+                loanSelector.insertItemAt(updatedLoan, selectedIndex);
             }
         } catch (NoSuchRecordException | DatabaseConnectionException e) {
             // TODO

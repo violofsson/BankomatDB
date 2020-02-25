@@ -1,6 +1,7 @@
 package se.nackademin.bankomatdb.adminpanel.View;
 
 import se.nackademin.bankomatdb.DatabaseConnectionException;
+import se.nackademin.bankomatdb.InsufficientFundsException;
 import se.nackademin.bankomatdb.NoSuchRecordException;
 import se.nackademin.bankomatdb.adminpanel.controller.Controller;
 import se.nackademin.bankomatdb.model.DTOAccount;
@@ -17,19 +18,19 @@ public class AccountView extends JPanel {
     private Controller controller;
     private DTOCustomer currentCustomer;
     private JComboBox<DTOAccount> accountSelect = new JComboBox<>();
-    private JTextField transactionField = new JTextField();
     private JButton withdrawButton = new JButton("Ta ut");
     private JButton depositButton = new JButton("Sätt in");
     private JTextField interestRateField = new JTextField();
     private JButton interestRateButton = new JButton("Sätt ny ränta");
     private JButton transactionHistoryButton = new JButton("Visa transaktionshistorik");
+    private JButton closeAccountButton = new JButton("Stäng konto");
 
     AccountView(JFrame parent, Controller c) {
         super();
         this.parentFrame = parent;
         this.controller = c;
+        addActionListeners();
         setLayout(this);
-        reloadAccounts(null);
     }
 
     DTOAccount getSelectedAccount() {
@@ -68,17 +69,63 @@ public class AccountView extends JPanel {
         container.setLayout(new FlowLayout());
         container.add(new JLabel("Välj konto"));
         container.add(accountSelect);
-        container.add(new JLabel("Ta ut/sätt in"));
         container.add(new JLabel("Ny räntesats"));
         container.add(interestRateField);
         container.add(interestRateButton);
-        container.add(transactionField);
         container.add(withdrawButton);
         container.add(depositButton);
         container.add(transactionHistoryButton);
+        container.add(closeAccountButton);
+    }
+
+    void closeAccount() {
+        int response = JOptionPane.showConfirmDialog(parentFrame,
+                "Är du säker på att du vill ta bort kontot?",
+                "Bekräfta borttagning",
+                JOptionPane.OK_CANCEL_OPTION);
+        if (response == JOptionPane.OK_OPTION) {
+            try {
+                controller.closeAccount(getSelectedAccount());
+            } catch (NoSuchRecordException e) {
+                e.printStackTrace();
+            } catch (DatabaseConnectionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    void deposit() {
+        try {
+            double input = Double.parseDouble(JOptionPane.showInputDialog("Belopp att ta ut:"));
+            controller.deposit(getSelectedAccount(), input);
+        } catch (NullPointerException | NumberFormatException e) {
+            e.printStackTrace();
+        } catch (NoSuchRecordException e) {
+            e.printStackTrace();
+        } catch (DatabaseConnectionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void withdraw() {
+        try {
+            double input = Double.parseDouble(JOptionPane.showInputDialog("Belopp att ta ut:"));
+            controller.withdraw(getSelectedAccount(), input);
+        } catch (NullPointerException | NumberFormatException e) {
+            e.printStackTrace();
+        } catch (NoSuchRecordException e) {
+            e.printStackTrace();
+        } catch (DatabaseConnectionException e) {
+            e.printStackTrace();
+        } catch (InsufficientFundsException e) {
+            e.printStackTrace();
+        }
     }
 
     public void addActionListeners() {
+        depositButton.addActionListener(ae -> deposit());
+        withdrawButton.addActionListener(ae -> withdraw());
         transactionHistoryButton.addActionListener(ae -> printTransactions());
+        closeAccountButton.addActionListener(ae -> closeAccount());
     }
 }
