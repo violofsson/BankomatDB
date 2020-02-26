@@ -29,14 +29,17 @@ public class CustomerView extends JPanel {
 
     void newCustomer() {
         try {
-            NewCustomerDialog dialog = new NewCustomerDialog(parentFrame);
-            Triplet<String, String, String> input = dialog.run();
-            controller.addCustomer(input.getValue0(), input.getValue1(), input.getValue2());
-            reloadCustomers();
+            // TODO Kontrollera indata
+            Triplet<String, String, String> input = new NewCustomerDialog(parentFrame).run();
+            if (input == null) return;
+            DTOCustomer newCustomer = controller.addCustomer(input.getValue0(), input.getValue1(), input.getValue2());
+            customerSelect.addItem(newCustomer);
+        } catch (NullPointerException e) {
+            // TODO Kan detta hända? Null-testet ovan eliminerar redan avbruten inmatning
+            e.printStackTrace();
         } catch (InvalidInsertException | DatabaseConnectionException e) {
             // TODO
-        } catch (NullPointerException e) {
-            // TODO
+            e.printStackTrace();
         }
     }
 
@@ -47,6 +50,7 @@ public class CustomerView extends JPanel {
             customers.forEach(customerSelect::addItem);
         } catch (DatabaseConnectionException e) {
             // TODO
+            JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -54,13 +58,14 @@ public class CustomerView extends JPanel {
         if (getSelectedCustomer() != null) {
             int response = JOptionPane.showConfirmDialog(
                     parentFrame,
-                    "Är du säker på att du vill ta bort " + getSelectedCustomer().toString() + "?",
+                    "Är du säker på att du vill ta bort " + getSelectedCustomer().toString() + "?\n" +
+                    "Alla hens personuppgifter, inklusive konton och lån, kommer att tas bort permanent.",
                     "Bekräfta borttagning",
-                    JOptionPane.OK_CANCEL_OPTION);
-            if (response == JOptionPane.OK_OPTION) {
+                    JOptionPane.YES_NO_OPTION);
+            if (response == JOptionPane.YES_OPTION) {
                 try {
                     if (controller.deleteCustomer(getSelectedCustomer())) {
-                        reloadCustomers();
+                        customerSelect.removeItem(getSelectedCustomer());
                     } else {
                         // TODO
                     }

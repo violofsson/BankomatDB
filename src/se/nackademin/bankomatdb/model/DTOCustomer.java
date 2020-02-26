@@ -37,7 +37,7 @@ public final class DTOCustomer {
 
     @Override
     public String toString() {
-        return String.format("Kundnummer %d, %s %s", getCustomerId(), getPersonalId(), getName());
+        return String.format("%s %s", getPersonalId(), getName());
     }
 
     @Override

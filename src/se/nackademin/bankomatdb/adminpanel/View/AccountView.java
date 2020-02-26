@@ -20,7 +20,6 @@ public class AccountView extends JPanel {
     private JComboBox<DTOAccount> accountSelect = new JComboBox<>();
     private JButton withdrawButton = new JButton("Ta ut");
     private JButton depositButton = new JButton("Sätt in");
-    private JTextField interestRateField = new JTextField();
     private JButton interestRateButton = new JButton("Sätt ny ränta");
     private JButton transactionHistoryButton = new JButton("Visa transaktionshistorik");
     private JButton closeAccountButton = new JButton("Stäng konto");
@@ -39,7 +38,9 @@ public class AccountView extends JPanel {
 
     void printTransactions() {
         try {
-            controller.getAccountTransactions(getSelectedAccount(), LocalDate.now().minus(1, ChronoUnit.MONTHS)).forEach(t -> System.out.println(t.toString()));
+            controller.getAccountTransactions(getSelectedAccount(),
+                    LocalDate.now().minus(1, ChronoUnit.MONTHS))
+                    .forEach(t -> System.out.println(t.toString()));
         } catch (DatabaseConnectionException | NoSuchRecordException e) {
             e.printStackTrace();
         }
@@ -65,12 +66,10 @@ public class AccountView extends JPanel {
         }
     }
 
-    public void setLayout(Container container) {
+    void setLayout(Container container) {
         container.setLayout(new FlowLayout());
         container.add(new JLabel("Välj konto"));
         container.add(accountSelect);
-        container.add(new JLabel("Ny räntesats"));
-        container.add(interestRateField);
         container.add(interestRateButton);
         container.add(withdrawButton);
         container.add(depositButton);
@@ -78,14 +77,35 @@ public class AccountView extends JPanel {
         container.add(closeAccountButton);
     }
 
+    void setInterestRate() {
+        try {
+            DTOAccount selected = getSelectedAccount();
+            double newRate = Double.parseDouble(JOptionPane.showInputDialog(
+                    "Ny räntesats i procent (nuvarande " + selected.getInterestRate() + "%)"));
+            controller.updateInterestRate(selected, newRate);
+            reloadAccounts(currentCustomer);
+        } catch (NullPointerException e) {
+
+        } catch (NoSuchRecordException e) {
+            e.printStackTrace();
+        } catch (DatabaseConnectionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void openAccount() {
+        // TODO
+    }
+
     void closeAccount() {
         int response = JOptionPane.showConfirmDialog(parentFrame,
-                "Är du säker på att du vill ta bort kontot?",
+                "Är du säker på att du vill ta bort kontot? Det kan inte återställas.",
                 "Bekräfta borttagning",
-                JOptionPane.OK_CANCEL_OPTION);
-        if (response == JOptionPane.OK_OPTION) {
+                JOptionPane.YES_NO_OPTION);
+        if (response == JOptionPane.YES_OPTION) {
             try {
                 controller.closeAccount(getSelectedAccount());
+                accountSelect.removeItem(getSelectedAccount());
             } catch (NoSuchRecordException e) {
                 e.printStackTrace();
             } catch (DatabaseConnectionException e) {
@@ -98,10 +118,15 @@ public class AccountView extends JPanel {
         try {
             double input = Double.parseDouble(JOptionPane.showInputDialog("Belopp att ta ut:"));
             controller.deposit(getSelectedAccount(), input);
+            reloadAccounts(currentCustomer);
         } catch (NullPointerException | NumberFormatException e) {
             e.printStackTrace();
         } catch (NoSuchRecordException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(
+                    parentFrame,
+                    "Det sökta kontot hittades inte. Inga pengar har satts in.",
+                    "Fel vid insättning",
+                    JOptionPane.ERROR_MESSAGE);
         } catch (DatabaseConnectionException e) {
             e.printStackTrace();
         }
@@ -111,18 +136,23 @@ public class AccountView extends JPanel {
         try {
             double input = Double.parseDouble(JOptionPane.showInputDialog("Belopp att ta ut:"));
             controller.withdraw(getSelectedAccount(), input);
+            reloadAccounts(currentCustomer);
         } catch (NullPointerException | NumberFormatException e) {
             e.printStackTrace();
-        } catch (NoSuchRecordException e) {
-            e.printStackTrace();
-        } catch (DatabaseConnectionException e) {
-            e.printStackTrace();
         } catch (InsufficientFundsException e) {
+            e.printStackTrace();
+        } catch (NoSuchRecordException e) {
+            JOptionPane.showMessageDialog(parentFrame,
+                    "Det sökta kontot hittades inte. Inga pengar har tagits ut.",
+                    "Fel vid uttag",
+                    JOptionPane.ERROR_MESSAGE);
+        } catch (DatabaseConnectionException e) {
             e.printStackTrace();
         }
     }
 
     public void addActionListeners() {
+        interestRateButton.addActionListener(ae -> setInterestRate());
         depositButton.addActionListener(ae -> deposit());
         withdrawButton.addActionListener(ae -> withdraw());
         transactionHistoryButton.addActionListener(ae -> printTransactions());

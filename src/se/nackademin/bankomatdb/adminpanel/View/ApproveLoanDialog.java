@@ -5,6 +5,7 @@ import org.javatuples.Triplet;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 // TODO
 public class ApproveLoanDialog extends JDialog {
@@ -20,8 +21,9 @@ public class ApproveLoanDialog extends JDialog {
         super(parent, "Bevilja lån", true);
         this.debtorId = debtorId;
         setLayout(this.getContentPane());
-        this.setLocationRelativeTo(parent);
+        this.setActionListeners();
         this.pack();
+        this.setLocationRelativeTo(parent);
     }
 
     Triplet<Double, Double, LocalDate> run() {
@@ -32,10 +34,10 @@ public class ApproveLoanDialog extends JDialog {
     void setActionListeners() {
         confirmButton.addActionListener(ae -> {
             try {
-                input = new Triplet<>(
+                input = Triplet.with(
                         Double.parseDouble(loanedAmountField.getText()),
                         Double.parseDouble(interestRateField.getText()),
-                        LocalDate.parse(deadlineField.getText()));
+                        LocalDate.parse(deadlineField.getText(), DateTimeFormatter.ISO_DATE));
                 dispose();
             } catch (NumberFormatException e) {
                 // TODO Meddela felaktig inmatning

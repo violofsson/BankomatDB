@@ -42,10 +42,11 @@ class UpdateLoanDialog extends JDialog {
             try {
                 newLoan = originalLoan.updated(
                         Double.parseDouble(newInterest.getText()),
-                        LocalDate.parse(newDeadline.getText()));
+                        LocalDate.parse(newDeadline.getText(), DateTimeFormatter.ISO_DATE));
                 dispose();
             } catch (NullPointerException | NumberFormatException | IllegalFormatException e) {
-                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Felaktigt format, försök igen.",
+                        "", JOptionPane.ERROR_MESSAGE);
             } catch (Exception e) {
                 // TODO Meddela felaktig inmatning
                 e.printStackTrace();

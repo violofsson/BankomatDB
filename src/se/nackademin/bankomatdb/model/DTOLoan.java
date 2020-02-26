@@ -63,7 +63,7 @@ public final class DTOLoan {
 
     @Override
     public String toString() {
-        return String.format("Lån %d, lånade %.2f %s, %.2f ränta, %.2f betalas %s",
+        return String.format("Lån %d, %.2f vid %s, ränta %.2f%%, %.2f betalas %s",
                 getLoanId(), getOriginalLoan(), grantedOn().format(DateTimeFormatter.ISO_DATE),
                 getInterestRate(), getFinalPayment(), getPaymentDeadline().format(DateTimeFormatter.ISO_DATE));
     }

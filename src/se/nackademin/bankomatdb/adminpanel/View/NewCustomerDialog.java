@@ -7,15 +7,16 @@ import java.awt.*;
 
 public class NewCustomerDialog extends JDialog {
     Triplet<String, String, String> input;
-    JTextField nameField;
-    JTextField personalIdField;
-    JTextField pinField;
+    JTextField nameField = new JTextField();
+    JTextField personalIdField = new JTextField();
+    JTextField pinField = new JTextField();
     JButton confirmButton = new JButton("Lägg till");
     JButton cancelButton = new JButton("Avbryt");
 
     NewCustomerDialog(JFrame parent) {
         super(parent, "Ny kund", true);
         setLayout(this.getContentPane());
+        setActionListeners();
         this.setLocationRelativeTo(parent);
         this.pack();
     }
@@ -28,8 +29,7 @@ public class NewCustomerDialog extends JDialog {
     void setActionListeners() {
         confirmButton.addActionListener(ae -> {
             try {
-                input = new Triplet<>(
-                        nameField.getText().trim(),
+                input = Triplet.with(nameField.getText().trim(),
                         personalIdField.getText().trim(),
                         pinField.getText().trim());
                 dispose();
