@@ -3,6 +3,7 @@ package se.nackademin.bankomatdb.adminpanel.View;
 import se.nackademin.bankomatdb.DatabaseConnectionException;
 import se.nackademin.bankomatdb.InsufficientFundsException;
 import se.nackademin.bankomatdb.NoSuchRecordException;
+import se.nackademin.bankomatdb.adminpanel.View.dialog.UtilityDialogs;
 import se.nackademin.bankomatdb.adminpanel.controller.Controller;
 import se.nackademin.bankomatdb.model.DTOAccount;
 import se.nackademin.bankomatdb.model.DTOCustomer;
@@ -61,15 +62,19 @@ public class AccountView extends JPanel {
                     c.setEnabled(true);
                 }
             }
-        } catch (NoSuchRecordException | DatabaseConnectionException e) {
+        } catch (DatabaseConnectionException e) {
             e.printStackTrace();
         }
     }
 
     void setLayout(Container container) {
-        container.setLayout(new FlowLayout());
-        container.add(new JLabel("Välj konto"));
+        GridLayout layout = new GridLayout(0, 3);
+        layout.setHgap(4);
+        layout.setVgap(4);
+        container.setLayout(layout);
+        container.add(new JLabel("Välj konto:"));
         container.add(accountSelect);
+        container.add(new JLabel("Öppna nytt konto")); // TODO
         container.add(interestRateButton);
         container.add(withdrawButton);
         container.add(depositButton);
@@ -116,17 +121,15 @@ public class AccountView extends JPanel {
 
     void deposit() {
         try {
-            double input = Double.parseDouble(JOptionPane.showInputDialog("Belopp att ta ut:"));
-            controller.deposit(getSelectedAccount(), input);
+            String rawInput = JOptionPane.showInputDialog("Belopp att ta ut:");
+            controller.deposit(getSelectedAccount(), Double.parseDouble(rawInput));
             reloadAccounts(currentCustomer);
-        } catch (NullPointerException | NumberFormatException e) {
+        } catch (NumberFormatException e) {
             e.printStackTrace();
         } catch (NoSuchRecordException e) {
-            JOptionPane.showMessageDialog(
-                    parentFrame,
-                    "Det sökta kontot hittades inte. Inga pengar har satts in.",
-                    "Fel vid insättning",
-                    JOptionPane.ERROR_MESSAGE);
+            UtilityDialogs.reportFailedOperation(
+                    this,
+                    "Det sökta kontot hittades inte. Inga pengar har satts in.");
         } catch (DatabaseConnectionException e) {
             e.printStackTrace();
         }
@@ -134,18 +137,18 @@ public class AccountView extends JPanel {
 
     void withdraw() {
         try {
-            double input = Double.parseDouble(JOptionPane.showInputDialog("Belopp att ta ut:"));
-            controller.withdraw(getSelectedAccount(), input);
+            String rawInput = JOptionPane.showInputDialog("Belopp att ta ut:");
+            if (rawInput == null) return;
+            controller.withdraw(getSelectedAccount(), Double.parseDouble(rawInput));
             reloadAccounts(currentCustomer);
-        } catch (NullPointerException | NumberFormatException e) {
+        } catch (NumberFormatException e) {
             e.printStackTrace();
         } catch (InsufficientFundsException e) {
             e.printStackTrace();
         } catch (NoSuchRecordException e) {
-            JOptionPane.showMessageDialog(parentFrame,
-                    "Det sökta kontot hittades inte. Inga pengar har tagits ut.",
-                    "Fel vid uttag",
-                    JOptionPane.ERROR_MESSAGE);
+            UtilityDialogs.reportFailedOperation(
+                    this,
+                    "Det sökta kontot hittades inte. Inga pengar har tagits ut.");
         } catch (DatabaseConnectionException e) {
             e.printStackTrace();
         }

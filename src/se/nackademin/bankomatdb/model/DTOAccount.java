@@ -34,7 +34,7 @@ public final class DTOAccount {
 
     @Override
     public String toString() {
-        return String.format("Konto %d, %.2f%% ränta, saldo %.2f kr", getAccountId(), getInterestRate(), getBalance());
+        return String.format("Konto %d, %.2f%%, %.2f kr", getAccountId(), getInterestRate(), getBalance());
     }
 
     @Override

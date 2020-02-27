@@ -254,7 +254,7 @@ public class VRepository implements Repository {
     }
 
     @Override
-    public Collection<DTOAccount> getAccountData(DTOCustomer customer) throws DatabaseConnectionException, NoSuchRecordException {
+    public Collection<DTOAccount> getAccountData(DTOCustomer customer) throws DatabaseConnectionException {
         int customerId = customer.getCustomerId();
         String accountQuery = "SELECT id, balance, interest_rate FROM account_data WHERE owner_id = ?";
         List<DTOAccount> accounts = new ArrayList<>();
@@ -272,7 +272,7 @@ public class VRepository implements Repository {
     }
 
     @Override
-    public Collection<DTOLoan> getLoanData(DTOCustomer customer) throws DatabaseConnectionException, NoSuchRecordException {
+    public Collection<DTOLoan> getLoanData(DTOCustomer customer) throws DatabaseConnectionException {
         int customerId = customer.getCustomerId();
         String loanQuery = "SELECT id, original_amount, granted, interest_rate, deadline FROM loan_data WHERE debtor_id = ?";
         List<DTOLoan> loans = new ArrayList<>();
@@ -295,7 +295,7 @@ public class VRepository implements Repository {
     }
 
     @Override
-    public Collection<DTOTransaction> getTransactionHistory(DTOAccount account) throws DatabaseConnectionException, NoSuchRecordException {
+    public Collection<DTOTransaction> getTransactionHistory(DTOAccount account) throws DatabaseConnectionException {
         int accountId = account.getAccountId();
         String transactionQuery = "SELECT id, net_balance, transaction_time " +
                 "FROM transaction_data WHERE account_id = ?";

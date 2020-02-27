@@ -40,9 +40,9 @@ public interface Repository {
 
     Collection<DTOCustomer> getCustomerData() throws DatabaseConnectionException;
 
-    Collection<DTOAccount> getAccountData(DTOCustomer customer) throws DatabaseConnectionException, NoSuchRecordException;
+    Collection<DTOAccount> getAccountData(DTOCustomer customer) throws DatabaseConnectionException;
 
-    Collection<DTOLoan> getLoanData(DTOCustomer customer) throws DatabaseConnectionException, NoSuchRecordException;
+    Collection<DTOLoan> getLoanData(DTOCustomer customer) throws DatabaseConnectionException;
 
     Collection<DTOTransaction> getTransactionHistory(DTOAccount account) throws DatabaseConnectionException, NoSuchRecordException; // Per kund? För alla?
 }

@@ -4,6 +4,9 @@ import org.javatuples.Triplet;
 import se.nackademin.bankomatdb.DatabaseConnectionException;
 import se.nackademin.bankomatdb.InvalidInsertException;
 import se.nackademin.bankomatdb.NoSuchRecordException;
+import se.nackademin.bankomatdb.adminpanel.View.dialog.ApproveLoanDialog;
+import se.nackademin.bankomatdb.adminpanel.View.dialog.UpdateLoanDialog;
+import se.nackademin.bankomatdb.adminpanel.View.dialog.UtilityDialogs;
 import se.nackademin.bankomatdb.adminpanel.controller.Controller;
 import se.nackademin.bankomatdb.model.DTOCustomer;
 import se.nackademin.bankomatdb.model.DTOLoan;
@@ -29,6 +32,33 @@ public class LoanView extends JPanel {
         addActionListeners();
     }
 
+    void addActionListeners() {
+        newLoanButton.addActionListener(ae -> this.approveLoan());
+        updateLoanButton.addActionListener(ae -> this.updateLoan());
+    }
+
+    void approveLoan() {
+        try {
+            ApproveLoanDialog dialog = new ApproveLoanDialog(parentFrame, currentCustomer.getCustomerId());
+            Triplet<Double, Double, LocalDate> input = dialog.run();
+            DTOLoan newLoan = controller.approveLoan(currentCustomer, input.getValue0(), input.getValue1(), input.getValue2());
+            loanSelector.addItem(newLoan);
+        } catch (NullPointerException | NumberFormatException | IllegalFormatException | InvalidInsertException e) {
+            e.printStackTrace();
+            UtilityDialogs.reportInvalidInput(this, "Felaktigt format på ett eller flera fält.");
+        } catch (NoSuchRecordException e) {
+            e.printStackTrace();
+            UtilityDialogs.reportFailedOperation(this, "Misslyckades med att ge lån: låntagaren finns inte.");
+        } catch (DatabaseConnectionException e) {
+            e.printStackTrace();
+            UtilityDialogs.reportConnectionError(this);
+        }
+    }
+
+    private DTOLoan getSelectedLoan() {
+        return loanSelector.getItemAt(loanSelector.getSelectedIndex());
+    }
+
     void reloadLoans(DTOCustomer customer) {
         this.currentCustomer = customer;
         loanSelector.removeAllItems();
@@ -44,38 +74,20 @@ public class LoanView extends JPanel {
                 loanSelector.setEnabled(true);
                 updateLoanButton.setEnabled(true);
             }
-        } catch (NoSuchRecordException | DatabaseConnectionException e) {
+        } catch (DatabaseConnectionException e) {
             e.printStackTrace();
+            UtilityDialogs.reportConnectionError(this);
         }
     }
 
     void setLayout(Container container) {
-        container.setLayout(new FlowLayout());
-        container.add(newLoanButton);
+        GridLayout layout = new GridLayout(0, 1);
+        layout.setVgap(4);
+        container.setLayout(layout);
+        container.add(new JLabel("Välj lån:"));
         container.add(loanSelector);
+        container.add(newLoanButton);
         container.add(updateLoanButton);
-    }
-
-    void addActionListeners() {
-        newLoanButton.addActionListener(ae -> this.approveLoan());
-        updateLoanButton.addActionListener(ae -> this.updateLoan());
-    }
-
-    void approveLoan() {
-        try {
-            ApproveLoanDialog dialog = new ApproveLoanDialog(parentFrame, currentCustomer.getCustomerId());
-            Triplet<Double, Double, LocalDate> input = dialog.run();
-            DTOLoan newLoan = controller.approveLoan(currentCustomer, input.getValue0(), input.getValue1(), input.getValue2());
-            loanSelector.addItem(newLoan);
-        } catch (NullPointerException | NumberFormatException | IllegalFormatException e) {
-            // TODO
-        } catch (InvalidInsertException | NoSuchRecordException | DatabaseConnectionException e) {
-            // TODO
-        }
-    }
-
-    private DTOLoan getSelectedLoan() {
-        return loanSelector.getItemAt(loanSelector.getSelectedIndex());
     }
 
     void updateLoan() {
@@ -89,8 +101,12 @@ public class LoanView extends JPanel {
                 loanSelector.removeItemAt(selectedIndex);
                 loanSelector.insertItemAt(updatedLoan, selectedIndex);
             }
-        } catch (NoSuchRecordException | DatabaseConnectionException e) {
-            // TODO
+        } catch (NoSuchRecordException e) {
+            e.printStackTrace();
+            UtilityDialogs.reportFailedOperation(this, "Misslyckades med att uppdatera lån: lånet finns inte.");
+        } catch (DatabaseConnectionException e) {
+            e.printStackTrace();
+            UtilityDialogs.reportConnectionError(this);
         }
     }
 }

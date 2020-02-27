@@ -69,14 +69,14 @@ public class Controller {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public Collection<DTOAccount> getCustomerAccounts(DTOCustomer customer) throws DatabaseConnectionException, NoSuchRecordException {
+    public Collection<DTOAccount> getCustomerAccounts(DTOCustomer customer) throws DatabaseConnectionException {
         return repository.getAccountData(customer)
                 .stream()
                 .sorted(Comparator.comparingInt(DTOAccount::getAccountId))
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public Collection<DTOLoan> getCustomerLoans(DTOCustomer customer) throws DatabaseConnectionException, NoSuchRecordException {
+    public Collection<DTOLoan> getCustomerLoans(DTOCustomer customer) throws DatabaseConnectionException {
         return repository.getLoanData(customer)
                 .stream()
                 .sorted(Comparator.comparingInt(DTOLoan::getLoanId))

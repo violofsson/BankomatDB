@@ -1,4 +1,4 @@
-package se.nackademin.bankomatdb.adminpanel.View;
+package se.nackademin.bankomatdb.adminpanel.View.dialog;
 
 import se.nackademin.bankomatdb.model.DTOLoan;
 
@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.IllegalFormatException;
 
-class UpdateLoanDialog extends JDialog {
+public class UpdateLoanDialog extends JDialog {
     private DTOLoan originalLoan;
     private DTOLoan newLoan;
     private JTextField newDeadline = new JTextField();
@@ -16,7 +16,7 @@ class UpdateLoanDialog extends JDialog {
     private JButton confirmButton = new JButton("Bekräfta ändring");
     private JButton resetButton = new JButton("Återställ");
 
-    UpdateLoanDialog(JFrame parent, DTOLoan loan) {
+    public UpdateLoanDialog(JFrame parent, DTOLoan loan) {
         super(parent, "Uppdatera lån", true);
         this.originalLoan = loan;
         this.newLoan = loan;
@@ -32,7 +32,7 @@ class UpdateLoanDialog extends JDialog {
         this.newInterest.setText(String.valueOf(originalLoan.getInterestRate()));
     }
 
-    DTOLoan run() {
+    public DTOLoan run() {
         this.setVisible(true);
         return newLoan;
     }

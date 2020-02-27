@@ -20,16 +20,18 @@ public class StartView extends JFrame {
         customerPanel.reloadCustomers();
         this.setTitle("Bankombud");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setLocationRelativeTo(null);
         this.pack();
+        this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
 
     void setLayout(Container container) {
-        container.setLayout(new GridLayout(0, 1));
-        container.add(customerPanel);
-        container.add(accountPanel);
-        container.add(loanPanel);
+        BorderLayout layout = new BorderLayout();
+        layout.setVgap(8);
+        container.setLayout(layout);
+        container.add(customerPanel, BorderLayout.PAGE_START);
+        container.add(accountPanel, BorderLayout.CENTER);
+        container.add(loanPanel, BorderLayout.PAGE_END);
     }
 
     DTOCustomer getCurrentCustomer() {

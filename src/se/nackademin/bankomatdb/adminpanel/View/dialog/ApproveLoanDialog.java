@@ -1,4 +1,4 @@
-package se.nackademin.bankomatdb.adminpanel.View;
+package se.nackademin.bankomatdb.adminpanel.View.dialog;
 
 import org.javatuples.Triplet;
 
@@ -17,7 +17,7 @@ public class ApproveLoanDialog extends JDialog {
     JButton confirmButton = new JButton("Bevilja");
     JButton cancelButton = new JButton("Avbryt");
 
-    ApproveLoanDialog(JFrame parent, int debtorId) {
+    public ApproveLoanDialog(JFrame parent, int debtorId) {
         super(parent, "Bevilja lån", true);
         this.debtorId = debtorId;
         setLayout(this.getContentPane());
@@ -26,7 +26,7 @@ public class ApproveLoanDialog extends JDialog {
         this.setLocationRelativeTo(parent);
     }
 
-    Triplet<Double, Double, LocalDate> run() {
+    public Triplet<Double, Double, LocalDate> run() {
         this.setVisible(true);
         return input;
     }
