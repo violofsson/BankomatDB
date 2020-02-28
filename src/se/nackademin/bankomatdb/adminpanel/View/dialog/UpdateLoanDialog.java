@@ -45,11 +45,7 @@ public class UpdateLoanDialog extends JDialog {
                         LocalDate.parse(newDeadline.getText(), DateTimeFormatter.ISO_DATE));
                 dispose();
             } catch (NullPointerException | NumberFormatException | IllegalFormatException e) {
-                JOptionPane.showMessageDialog(null, "Felaktigt format, försök igen.",
-                        "", JOptionPane.ERROR_MESSAGE);
-            } catch (Exception e) {
-                // TODO Meddela felaktig inmatning
-                e.printStackTrace();
+                UtilityDialogs.reportInvalidInput(this, "Felaktig inmatning i ett eller flera fält.");
             }
         });
         resetButton.addActionListener(ae -> this.resetFields());

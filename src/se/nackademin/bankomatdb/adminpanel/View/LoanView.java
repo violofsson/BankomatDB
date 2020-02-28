@@ -44,14 +44,12 @@ public class LoanView extends JPanel {
             DTOLoan newLoan = controller.approveLoan(currentCustomer, input.getValue0(), input.getValue1(), input.getValue2());
             loanSelector.addItem(newLoan);
         } catch (NullPointerException | NumberFormatException | IllegalFormatException | InvalidInsertException e) {
-            e.printStackTrace();
             UtilityDialogs.reportInvalidInput(this, "Felaktigt format på ett eller flera fält.");
         } catch (NoSuchRecordException e) {
             e.printStackTrace();
             UtilityDialogs.reportFailedOperation(this, "Misslyckades med att ge lån: låntagaren finns inte.");
         } catch (DatabaseConnectionException e) {
-            e.printStackTrace();
-            UtilityDialogs.reportConnectionError(this);
+            UtilityDialogs.reportConnectionError(this, e);
         }
     }
 
@@ -75,8 +73,7 @@ public class LoanView extends JPanel {
                 updateLoanButton.setEnabled(true);
             }
         } catch (DatabaseConnectionException e) {
-            e.printStackTrace();
-            UtilityDialogs.reportConnectionError(this);
+            UtilityDialogs.reportConnectionError(this, e);
         }
     }
 
@@ -105,8 +102,7 @@ public class LoanView extends JPanel {
             e.printStackTrace();
             UtilityDialogs.reportFailedOperation(this, "Misslyckades med att uppdatera lån: lånet finns inte.");
         } catch (DatabaseConnectionException e) {
-            e.printStackTrace();
-            UtilityDialogs.reportConnectionError(this);
+            UtilityDialogs.reportConnectionError(this, e);
         }
     }
 }

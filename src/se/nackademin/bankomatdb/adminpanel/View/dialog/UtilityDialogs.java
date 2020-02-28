@@ -4,9 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 
 public class UtilityDialogs {
-    public static void reportConnectionError(Component parentComponent) {
+    private UtilityDialogs() {
+    }
+
+    public static void reportConnectionError(Component parentComponent, Exception e) {
+        e.printStackTrace();
         JOptionPane.showMessageDialog(parentComponent,
-                "Operationen misslyckades.\nKontrollera databasanslutningen.",
+                "Operationen misslyckades. Kontrollera databasanslutningen.",
                 "Anslutningsfel",
                 JOptionPane.ERROR_MESSAGE);
     }
@@ -23,5 +27,12 @@ public class UtilityDialogs {
                 message + "\nKontrollera inmatade data och försök igen.",
                 "Felaktig inmatning",
                 JOptionPane.WARNING_MESSAGE);
+    }
+
+    public static void showGenericMessage(Component parentComponent, String message) {
+        JOptionPane.showMessageDialog(parentComponent,
+                message,
+                "Information",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 }

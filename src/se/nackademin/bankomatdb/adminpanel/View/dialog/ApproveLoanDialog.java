@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.IllegalFormatException;
 
 // TODO
 public class ApproveLoanDialog extends JDialog {
@@ -35,12 +36,12 @@ public class ApproveLoanDialog extends JDialog {
         confirmButton.addActionListener(ae -> {
             try {
                 input = Triplet.with(
-                        Double.parseDouble(loanedAmountField.getText()),
-                        Double.parseDouble(interestRateField.getText()),
-                        LocalDate.parse(deadlineField.getText(), DateTimeFormatter.ISO_DATE));
+                        Double.parseDouble(loanedAmountField.getText().replace(",", ".").strip()),
+                        Double.parseDouble(interestRateField.getText().replace(",", ".").strip()),
+                        LocalDate.parse(deadlineField.getText().strip(), DateTimeFormatter.ISO_DATE));
                 dispose();
-            } catch (NumberFormatException e) {
-                // TODO Meddela felaktig inmatning
+            } catch (NullPointerException | NumberFormatException | IllegalFormatException e) {
+                UtilityDialogs.reportInvalidInput(this, "Felaktig inmatning i ett eller flera fält.");
             }
         });
 

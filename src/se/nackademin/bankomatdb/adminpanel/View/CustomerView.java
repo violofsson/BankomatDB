@@ -50,8 +50,7 @@ public class CustomerView extends JPanel {
             e.printStackTrace();
             UtilityDialogs.reportInvalidInput(this, "Misslyckades med att lägga till ny kund.");
         } catch (DatabaseConnectionException e) {
-            e.printStackTrace();
-            UtilityDialogs.reportConnectionError(this);
+            UtilityDialogs.reportConnectionError(this, e);
         }
     }
 
@@ -61,21 +60,19 @@ public class CustomerView extends JPanel {
 
     void reloadCustomers() {
         try {
-            Component[] disableableComponents = new Component[]{customerSelect, updateCustomerButton, removeCustomerButton};
             customerSelect.removeAllItems();
-            for (Component c : disableableComponents) {
-                c.setEnabled(false);
-            }
+            customerSelect.setEnabled(false);
+            updateCustomerButton.setEnabled(false);
+            removeCustomerButton.setEnabled(false);
             Collection<DTOCustomer> customers = controller.getCustomers();
             if (!customers.isEmpty()) {
                 customers.forEach(customerSelect::addItem);
-                for (Component c : disableableComponents) {
-                    c.setEnabled(true);
-                }
+                customerSelect.setEnabled(true);
+                updateCustomerButton.setEnabled(true);
+                removeCustomerButton.setEnabled(true);
             }
         } catch (DatabaseConnectionException e) {
-            e.printStackTrace();
-            UtilityDialogs.reportConnectionError(this);
+            UtilityDialogs.reportConnectionError(this, e);
         }
     }
 
@@ -95,13 +92,11 @@ public class CustomerView extends JPanel {
                 } // Comboboxen uppdateras i finally-satsen
             } catch (NoSuchRecordException e) {
                 e.printStackTrace();
-                // TODO Ersätt med egen dialog?
-                JOptionPane.showMessageDialog(this,
-                        "Kunden finns inte i databasen.\nLaddar om kunddata...",
-                        "Onödig operation", JOptionPane.INFORMATION_MESSAGE);
+                UtilityDialogs.showGenericMessage(this,
+                        "Onödig operation: kunden finns inte längre i databasen.\n" +
+                                "Laddar om kunddata...");
             } catch (DatabaseConnectionException e) {
-                e.printStackTrace();
-                UtilityDialogs.reportConnectionError(this);
+                UtilityDialogs.reportConnectionError(this, e);
             } finally {
                 reloadCustomers();
             }
@@ -133,8 +128,7 @@ public class CustomerView extends JPanel {
                     "Misslyckades med att uppdatera kund: kunden finns inte i databasen.\n" +
                             "Laddar om kunddata...");
         } catch (DatabaseConnectionException e) {
-            e.printStackTrace();
-            UtilityDialogs.reportConnectionError(this);
+            UtilityDialogs.reportConnectionError(this, e);
         }
     }
 }
