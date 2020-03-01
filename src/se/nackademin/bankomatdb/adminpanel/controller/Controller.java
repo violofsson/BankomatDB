@@ -46,6 +46,7 @@ public class Controller {
 
     public DTOAccount withdraw(DTOAccount account, double amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchRecordException {
         if (amount < 0) throw new IllegalArgumentException("Attempting to withdraw a negative amount");
+        if (amount > account.getBalance()) throw new InsufficientFundsException("Attempting to withdraw more than the account contains");
         return repository.withdraw(account.getAccountId(), amount);
     }
 

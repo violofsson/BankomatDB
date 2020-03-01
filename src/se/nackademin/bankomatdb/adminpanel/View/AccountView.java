@@ -181,7 +181,6 @@ public class AccountView extends JPanel {
         } catch (NumberFormatException e) {
             UtilityDialogs.reportInvalidInput(this, "Ogiltigt formaterat uttag. Inga pengar har tagits ut.");
         } catch (InsufficientFundsException e) {
-            e.printStackTrace();
             UtilityDialogs.reportInvalidInput(this, "Otillräckligt saldo. Inga pengar har tagits ut.");
         } catch (NoSuchRecordException e) {
             e.printStackTrace();
