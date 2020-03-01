@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.IllegalFormatException;
 
-// TODO
 public class ApproveLoanDialog extends JDialog {
     int debtorId;
     Triplet<Double, Double, LocalDate> input;

@@ -102,7 +102,7 @@ public class VRepository implements Repository {
 
     @Override
     public boolean closeAccount(int accountId) throws DatabaseConnectionException {
-        return deleteEntityById(accountId, "DELETE FROM account_data WHERE account_id = ?");
+        return deleteEntityById(accountId, "DELETE FROM account_data WHERE id = ?");
     }
 
     private DTOAccount transact(int accountId, double balanceChange) throws SQLException, NoSuchRecordException {
@@ -199,6 +199,7 @@ public class VRepository implements Repository {
                 ResultSet rs = insert.getGeneratedKeys();
                 rs.next();
                 int loanId = rs.getInt(1);
+                read.setInt(1, loanId);
                 rs = read.executeQuery();
                 rs.next();
                 return new DTOLoan(

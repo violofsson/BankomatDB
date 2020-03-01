@@ -13,7 +13,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            Main root = new Main();
+            new Main();
         } catch (DatabaseConnectionException e) {
             e.printStackTrace();
             System.exit(1);

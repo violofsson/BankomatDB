@@ -14,6 +14,7 @@ import se.nackademin.bankomatdb.model.DTOLoan;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.IllegalFormatException;
 
@@ -41,9 +42,10 @@ public class LoanView extends JPanel {
         try {
             ApproveLoanDialog dialog = new ApproveLoanDialog(parentFrame, currentCustomer.getCustomerId());
             Triplet<Double, Double, LocalDate> input = dialog.run();
-            DTOLoan newLoan = controller.approveLoan(currentCustomer, input.getValue0(), input.getValue1(), input.getValue2());
-            loanSelector.addItem(newLoan);
-        } catch (NullPointerException | NumberFormatException | IllegalFormatException | InvalidInsertException e) {
+            if (input == null) return;
+            controller.approveLoan(currentCustomer, input.getValue0(), input.getValue1(), input.getValue2());
+            reloadLoans(currentCustomer);
+        } catch (NullPointerException | NumberFormatException | DateTimeParseException | IllegalFormatException | InvalidInsertException e) {
             UtilityDialogs.reportInvalidInput(this, "Felaktigt format på ett eller flera fält.");
         } catch (NoSuchRecordException e) {
             e.printStackTrace();

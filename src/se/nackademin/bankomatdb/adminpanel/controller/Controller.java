@@ -61,7 +61,6 @@ public class Controller {
         return repository.updateLoan(loan, newInterestRate, newDeadline);
     }
 
-    // TODO Mappa till vymodell
     public Collection<DTOCustomer> getCustomers() throws DatabaseConnectionException {
         return repository.getCustomerData()
                 .stream()

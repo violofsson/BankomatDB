@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.IllegalFormatException;
 
 public class UpdateLoanDialog extends JDialog {
@@ -44,7 +45,7 @@ public class UpdateLoanDialog extends JDialog {
                         Double.parseDouble(newInterest.getText()),
                         LocalDate.parse(newDeadline.getText(), DateTimeFormatter.ISO_DATE));
                 dispose();
-            } catch (NullPointerException | NumberFormatException | IllegalFormatException e) {
+            } catch (NullPointerException | NumberFormatException | DateTimeParseException | IllegalFormatException e) {
                 UtilityDialogs.reportInvalidInput(this, "Felaktig inmatning i ett eller flera fält.");
             }
         });

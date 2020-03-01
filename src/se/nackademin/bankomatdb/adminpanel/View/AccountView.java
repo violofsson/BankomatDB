@@ -53,7 +53,7 @@ public class AccountView extends JPanel {
         if (response == JOptionPane.YES_OPTION) {
             try {
                 controller.closeAccount(account);
-                accountSelect.removeItem(account);
+                reloadAccounts(currentCustomer);
             } catch (NoSuchRecordException e) {
                 UtilityDialogs.reportFailedOperation(this,
                         "Onödig operation: kontot är redan borttaget från databasen.\n" +
@@ -91,8 +91,8 @@ public class AccountView extends JPanel {
         if (rawInput == null) return;
         try {
             double interestRate = Double.parseDouble(rawInput.replace("%", "").strip());
-            DTOAccount newAccount = controller.openAccount(customer, interestRate);
-            accountSelect.addItem(newAccount);
+            controller.openAccount(customer, interestRate);
+            reloadAccounts(customer);
         } catch (NumberFormatException e) {
             UtilityDialogs.reportInvalidInput(this, "Ogiltigt formaterad räntesats.");
         } catch (InvalidInsertException e) {
@@ -125,6 +125,7 @@ public class AccountView extends JPanel {
         accountSelect.removeAllItems();
         Arrays.stream(this.getComponents()).forEach(c -> c.setEnabled(false));
         if (currentCustomer == null) return;
+        openAccountButton.setEnabled(true);
         try {
             Collection<DTOAccount> accounts = controller.getCustomerAccounts(currentCustomer);
             if (!accounts.isEmpty()) {

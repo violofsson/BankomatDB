@@ -30,7 +30,7 @@ public class UpdateCustomerDialog extends JDialog {
             newNameAndPin = Pair.with(nameField.getText(), pinField.getText());
             dispose();
         });
-        cancelButton.addActionListener(ae -> resetFields());
+        cancelButton.addActionListener(ae -> dispose());
     }
 
     public Pair<String, String> getNameAndPin() {

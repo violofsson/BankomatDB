@@ -41,16 +41,16 @@ public class CustomerView extends JPanel {
 
     private void addCustomer() {
         try {
-            // TODO Kontrollera indata
             Triplet<String, String, String> nameIdPin = new NewCustomerDialog(parentFrame).getNameIdPin();
             if (nameIdPin == null) return;
-            DTOCustomer newCustomer = controller.addCustomer(nameIdPin.getValue0(), nameIdPin.getValue1(), nameIdPin.getValue2());
-            customerSelect.addItem(newCustomer);
+            controller.addCustomer(nameIdPin.getValue0(), nameIdPin.getValue1(), nameIdPin.getValue2());
         } catch (InvalidInsertException e) {
             e.printStackTrace();
             UtilityDialogs.reportInvalidInput(this, "Misslyckades med att lägga till ny kund.");
         } catch (DatabaseConnectionException e) {
             UtilityDialogs.reportConnectionError(this, e);
+        } finally {
+            reloadCustomers();
         }
     }
 
@@ -129,6 +129,8 @@ public class CustomerView extends JPanel {
                             "Laddar om kunddata...");
         } catch (DatabaseConnectionException e) {
             UtilityDialogs.reportConnectionError(this, e);
+        } finally {
+            reloadCustomers();
         }
     }
 }
