@@ -40,7 +40,7 @@ public class LoanView extends JPanel {
 
     void approveLoan() {
         try {
-            ApproveLoanDialog dialog = new ApproveLoanDialog(parentFrame, currentCustomer.getCustomerId());
+            ApproveLoanDialog dialog = new ApproveLoanDialog(parentFrame);
             Triplet<Double, Double, LocalDate> input = dialog.run();
             if (input == null) return;
             controller.approveLoan(currentCustomer, input.getValue0(), input.getValue1(), input.getValue2());

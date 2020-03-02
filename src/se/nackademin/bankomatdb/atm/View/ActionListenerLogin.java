@@ -27,7 +27,6 @@ public class ActionListenerLogin extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
         if (e.getSource() == loginButton) {
             try {
                 if (controller.login(idField.getText(), String.valueOf(passwordField.getPassword()))) {
@@ -42,6 +41,7 @@ public class ActionListenerLogin extends JFrame implements ActionListener {
             }
 
         } else if (e.getSource() == resetButton) {
+            idField.setText("");
             passwordField.setText("");
         }
     }

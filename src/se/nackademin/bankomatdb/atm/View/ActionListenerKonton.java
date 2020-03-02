@@ -5,13 +5,15 @@ import se.nackademin.bankomatdb.InsufficientFundsException;
 import se.nackademin.bankomatdb.NoSuchRecordException;
 import se.nackademin.bankomatdb.atm.controller.Controller;
 import se.nackademin.bankomatdb.model.DTOAccount;
+import se.nackademin.bankomatdb.model.DTOLoan;
+import se.nackademin.bankomatdb.model.DTOTransaction;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
 
 public class ActionListenerKonton implements ActionListener {
-
     private JComboBox<DTOAccount> accountsComboBox;
     private JButton withdraw;
     private JButton balance;
@@ -54,7 +56,12 @@ public class ActionListenerKonton implements ActionListener {
             if (selectedAccount == null) return;
             try {
                 System.out.println("Saldo: " + selectedAccount.getBalance() +"\n" + "Lån:");
-                controller.getCustomerLoans().forEach(System.out::println);
+                Collection<DTOLoan> loans = controller.getCustomerLoans();
+                if (loans.isEmpty()) {
+                    System.out.println("Inga lån.");
+                } else {
+                    loans.forEach(System.out::println);
+                }
             } catch (DatabaseConnectionException ex) {
                 ex.printStackTrace();
             } finally {
@@ -65,7 +72,12 @@ public class ActionListenerKonton implements ActionListener {
             try {
                 if (selectedAccount == null) return;
                 System.out.println("Kontohistorik:");
-                controller.getTransactionHistory(selectedAccount).forEach(System.out::println);
+                Collection<DTOTransaction> history = controller.getTransactionHistory(selectedAccount);
+                if (history.isEmpty()) {
+                    System.out.println("Inga transaktioner.");
+                } else {
+                    history.forEach(System.out::println);
+                }
             } catch (DatabaseConnectionException | NoSuchRecordException ex) {
                 ex.printStackTrace();
             } finally {

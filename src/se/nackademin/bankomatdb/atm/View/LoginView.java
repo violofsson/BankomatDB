@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.*;
 
 public class LoginView extends JFrame {
-
     private Container container = getContentPane();
     private JLabel bankomatLabel = new JLabel("Bankomat");
     private JLabel idLabel = new JLabel("Personnummer");
