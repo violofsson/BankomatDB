@@ -1,9 +1,6 @@
 package se.nackademin.bankomatdb.atm.controller;
 
 import se.nackademin.bankomatdb.*;
-import se.nackademin.bankomatdb.atm.AlreadyLoggedInException;
-import se.nackademin.bankomatdb.atm.NotLoggedInException;
-import se.nackademin.bankomatdb.atm.repository.VRepository;
 import se.nackademin.bankomatdb.model.DTOAccount;
 import se.nackademin.bankomatdb.model.DTOCustomer;
 import se.nackademin.bankomatdb.atm.repository.ATMRepository;
@@ -13,36 +10,39 @@ import se.nackademin.bankomatdb.model.DTOTransaction;
 import java.util.Collection;
 
 public class Controller {
-    private ATMRepository repository;
-    private DTOCustomer currentCustomer;
+    ATMRepository repository;
+    DTOCustomer currentCustomer;
 
-    public Controller() throws DatabaseConnectionException {
-        repository = new VRepository();
+    public Controller() {
+        // Intialisera repository
     }
 
-    public DTOCustomer getCurrentCustomer() throws NotLoggedInException {
-        if (currentCustomer != null) {
-            return currentCustomer;
-        } else {
-            throw new NotLoggedInException("No customer is defined");
-        }
+    // TODO Kasta lämplig exception om kunden inte är initialiserad
+    // Inte inloggad
+    public DTOCustomer getCurrentCustomer() {
+        return currentCustomer;
     }
 
-    public Collection<DTOAccount> getCustomerAccounts() throws DatabaseConnectionException, NotLoggedInException {
+    public int getCurrentCustomerId() {
+        return currentCustomer.getCustomerId();
+    }
+
+    public Collection<DTOAccount> getCustomerAccounts() throws DatabaseConnectionException, NoSuchCustomerException {
         return repository.getCustomerAccounts(getCurrentCustomer().getCustomerId());
     }
 
-    public Collection<DTOTransaction> getTransactionHistory(DTOAccount account) throws DatabaseConnectionException, NoSuchRecordException {
+    public Collection<DTOTransaction> getTransactionHistory(DTOAccount account) throws DatabaseConnectionException, NoSuchAccountException {
         return repository.getTransactionHistory(account.getAccountId());
     }
 
-    public Collection<DTOLoan> getCustomerLoans() throws DatabaseConnectionException, NotLoggedInException {
+    public Collection<DTOLoan> getCustomerLoans() throws DatabaseConnectionException, NoSuchCustomerException {
         return repository.getCustomerLoans(getCurrentCustomer().getCustomerId());
     }
 
+    // Redan inloggad
     public boolean login(String id, String pin) throws DatabaseConnectionException, AlreadyLoggedInException {
         if (currentCustomer != null) {
-            throw new AlreadyLoggedInException("Unable to log in: already logged in");
+            throw new AlreadyLoggedInException();
         }
         try {
             currentCustomer = repository.login(id, pin);
@@ -53,19 +53,13 @@ public class Controller {
         }
     }
 
-    public void logout()  throws NotLoggedInException {
-        if (currentCustomer != null) {
-            currentCustomer = null;
-        } else {
-            throw new NotLoggedInException("Unable to log out: nobody's logged in");
-        }
+    // Inte inloggad
+    public void logout() {
+        currentCustomer = null;
     }
 
     // Returnerar true oom uttaget lyckades, precis som i Repository
-    public boolean withdraw(DTOAccount account, int amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchRecordException {
-        if (amount > account.getBalance()) {
-            throw new InsufficientFundsException();
-        }
+    public boolean withdraw(DTOAccount account, int amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchAccountException {
         return repository.withdraw(account.getAccountId(), amount);
     }
 }

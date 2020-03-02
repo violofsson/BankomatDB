@@ -1,29 +1,37 @@
 package se.nackademin.bankomatdb.atm.View;
 
 import se.nackademin.bankomatdb.DatabaseConnectionException;
-import se.nackademin.bankomatdb.InsufficientFundsException;
-import se.nackademin.bankomatdb.NoSuchRecordException;
+import se.nackademin.bankomatdb.NoSuchCustomerException;
+import se.nackademin.bankomatdb.adminpanel.repository.Repository;
 import se.nackademin.bankomatdb.atm.controller.Controller;
+import se.nackademin.bankomatdb.atm.repository.ATMRepository;
 import se.nackademin.bankomatdb.model.DTOAccount;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class KontonView extends JFrame {
-    private Controller controller; // TODO Tilldela vid lämpligt tillfälle
+
     private Container container = getContentPane();
-    private JLabel väljKontoLabel = new JLabel("Välj konto");
-    private JComboBox<DTOAccount> konton = new JComboBox<>();
-    private JButton taUt = new JButton("Ta ut");
-    private JButton seSaldo = new JButton("Se Saldo");
-    private JButton kontoHistorik = new JButton("Kontohistorik");
+    private JLabel chooseAccountLabel = new JLabel("Välj konto");
+    private JComboBox<DTOAccount> accounts = new JComboBox<>();
+    private JButton withdraw = new JButton("Ta ut");
+    private JButton balance = new JButton("Se Saldo");
+    private JButton accountHistory = new JButton("Kontohistorik");
+    private ActionListenerKonton actionListener = new ActionListenerKonton(accounts, withdraw, balance, accountHistory);
+    private List<DTOAccount> accountList = new ArrayList<>();
+    private Controller controller = new Controller();
+    private ATMRepository repository;
 
     KontonView() {
         setLayout();
         setLocationAndSize();
         addComponentsToContainer();
         addActionEvent();
+        fillComboBox();
         this.setTitle("Konton");
         this.setSize(400, 190);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -32,66 +40,44 @@ public class KontonView extends JFrame {
         this.setVisible(false);
     }
 
-    void setLayout() {
+    public void setLayout() {
         container.setLayout(null);
     }
 
-    void setLocationAndSize() {
-        väljKontoLabel.setBounds(40, 20, 125, 30);
-        väljKontoLabel.setFont(new Font("Serif", Font.BOLD, 17));
-        konton.setBounds(150, 23, 125, 30);
-        taUt.setBounds(40, 80, 100, 30);
-        seSaldo.setBounds(150, 80, 100, 30);
-        kontoHistorik.setBounds(260, 80, 100, 30);
+    public void setLocationAndSize() {
+        chooseAccountLabel.setBounds(40, 20, 125, 30);
+        chooseAccountLabel.setFont(new Font("Serif", Font.BOLD, 17));
+        accounts.setBounds(150, 23, 125, 30);
+        withdraw.setBounds(40, 80, 100, 30);
+        balance.setBounds(150, 80, 100, 30);
+        accountHistory.setBounds(260, 80, 100, 30);
+
     }
 
-    void addComponentsToContainer() {
-        container.add(väljKontoLabel);
-        container.add(konton);
-        container.add(taUt);
-        container.add(seSaldo);
-        container.add(kontoHistorik);
+    public void addComponentsToContainer() {
+        container.add(chooseAccountLabel);
+        container.add(accounts);
+        container.add(withdraw);
+        container.add(balance);
+        container.add(accountHistory);
     }
 
-    void addActionEvent() {
-        konton.addActionListener(e -> selectKonto());
-        taUt.addActionListener(e -> withdraw((DTOAccount) konton.getSelectedItem()));
-        seSaldo.addActionListener(e -> viewSaldo((DTOAccount) konton.getSelectedItem()));
-        kontoHistorik.addActionListener(e -> printKontohistorik((DTOAccount) konton.getSelectedItem()));
+    public void addActionEvent() {
+        accounts.addActionListener(actionListener);
+        withdraw.addActionListener(actionListener);
+        balance.addActionListener(actionListener);
+        accountHistory.addActionListener(actionListener);
     }
 
-    void fillComboBox(Collection<DTOAccount> accounts) {
-        konton.removeAllItems();
-        accounts.forEach(acc -> konton.addItem(acc));
-    }
-
-    void printKontohistorik(DTOAccount account) {
+    public void fillComboBox() {
         try {
-            System.out.println("Kontohistorik för kontonummer " + account.getAccountId() + ":");
-            controller.getTransactionHistory(account).forEach(t -> System.out.println(t.toString()));
-        } catch (DatabaseConnectionException | NoSuchRecordException e) {
+            accountList = repository.getCustomerAccounts(controller.getCurrentCustomerId());
+        } catch (DatabaseConnectionException | NoSuchCustomerException e) {
             e.printStackTrace();
         }
-    }
 
-    void selectKonto() {
-        // Skapa currentKonto metod
-    }
-
-    void viewSaldo(DTOAccount account) {
-        JOptionPane.showMessageDialog(null, "Saldo: " + account.getBalance());
-    }
-
-    void withdraw(DTOAccount account) {
-        int summa = Integer.parseInt(JOptionPane.showInputDialog(null, "Hur mycket vill du ta ut?"));
-        try {
-            if (controller.withdraw(account, summa)) {
-                // uttag lyckades
-            } else {
-                // uttag misslyckades utan felsignal
-            }
-        } catch (NoSuchRecordException | DatabaseConnectionException | InsufficientFundsException e) {
-            e.printStackTrace();
+        for (DTOAccount account : accountList) {
+            accounts.addItem(account);
         }
     }
 }
