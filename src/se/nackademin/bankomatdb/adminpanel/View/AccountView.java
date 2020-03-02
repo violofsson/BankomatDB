@@ -69,6 +69,7 @@ public class AccountView extends JPanel {
         try {
             String rawInput = JOptionPane.showInputDialog("Belopp att ta ut (saldo " +
                     account.getBalance() + " kr):");
+            if (rawInput == null) return;
             controller.deposit(account, Double.parseDouble(rawInput));
             reloadAccounts(currentCustomer);
         } catch (NumberFormatException e) {
