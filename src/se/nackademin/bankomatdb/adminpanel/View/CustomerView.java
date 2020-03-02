@@ -43,6 +43,13 @@ public class CustomerView extends JPanel {
         try {
             Triplet<String, String, String> nameIdPin = new NewCustomerDialog(parentFrame).getNameIdPin();
             if (nameIdPin == null) return;
+            if (nameIdPin.getValue0().isEmpty() || nameIdPin.getValue1().isEmpty() || nameIdPin.getValue2().isEmpty()) {
+                throw new InvalidInsertException("Tomma fält");
+            } else if (nameIdPin.getValue1().length() != 13) {
+                throw new InvalidInsertException("Felaktigt personnummer - använd 12 siffror och bindestreck!");
+            } else if (nameIdPin.getValue2().length() != 4) {
+                throw new InvalidInsertException("PIN-kod måste ha exakt fyra siffror!");
+            }
             controller.addCustomer(nameIdPin.getValue0(), nameIdPin.getValue1(), nameIdPin.getValue2());
         } catch (InvalidInsertException e) {
             e.printStackTrace();

@@ -24,9 +24,9 @@ public class NewCustomerDialog extends JDialog {
 
     void addActionListeners() {
         confirmButton.addActionListener(ae -> {
-            nameIdPin = Triplet.with(nameField.getText().trim(),
-                    personalIdField.getText().trim(),
-                    pinField.getText().trim());
+            nameIdPin = Triplet.with(nameField.getText().strip(),
+                    personalIdField.getText().strip(),
+                    pinField.getText().strip());
             dispose();
         });
         cancelButton.addActionListener(ae -> dispose());

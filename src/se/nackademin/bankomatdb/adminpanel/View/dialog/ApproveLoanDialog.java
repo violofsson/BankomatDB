@@ -22,6 +22,7 @@ public class ApproveLoanDialog extends JDialog {
         this.debtorId = debtorId;
         setLayout(this.getContentPane());
         this.setActionListeners();
+        this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         this.pack();
         this.setLocationRelativeTo(parent);
     }
@@ -41,6 +42,7 @@ public class ApproveLoanDialog extends JDialog {
                 dispose();
             } catch (NullPointerException | NumberFormatException | IllegalFormatException e) {
                 UtilityDialogs.reportInvalidInput(this, "Felaktig inmatning i ett eller flera fält.");
+                dispose();
             }
         });
 

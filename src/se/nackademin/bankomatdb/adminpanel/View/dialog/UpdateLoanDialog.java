@@ -24,6 +24,7 @@ public class UpdateLoanDialog extends JDialog {
         resetFields();
         setLayout(this.getContentPane());
         setActionListeners();
+        this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(parent);
         this.pack();
     }
@@ -47,6 +48,7 @@ public class UpdateLoanDialog extends JDialog {
                 dispose();
             } catch (NullPointerException | NumberFormatException | DateTimeParseException | IllegalFormatException e) {
                 UtilityDialogs.reportInvalidInput(this, "Felaktig inmatning i ett eller flera fält.");
+                dispose();
             }
         });
         resetButton.addActionListener(ae -> this.resetFields());

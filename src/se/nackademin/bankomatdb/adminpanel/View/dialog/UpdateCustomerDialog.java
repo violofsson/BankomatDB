@@ -12,7 +12,7 @@ public class UpdateCustomerDialog extends JDialog {
     private JTextField nameField = new JTextField();
     private JTextField pinField = new JTextField();
     private JButton confirmButton = new JButton("Uppdatera");
-    private JButton cancelButton = new JButton("Avbryt");
+    private JButton resetButton = new JButton("Återställ");
 
     public UpdateCustomerDialog(JFrame parent, DTOCustomer customer) {
         super(parent, "Uppdatera kunduppgifter", true);
@@ -20,7 +20,7 @@ public class UpdateCustomerDialog extends JDialog {
         resetFields();
         setLayout(this.getContentPane());
         addActionListeners();
-        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         this.pack();
         this.setLocationRelativeTo(null);
     }
@@ -30,7 +30,7 @@ public class UpdateCustomerDialog extends JDialog {
             newNameAndPin = Pair.with(nameField.getText(), pinField.getText());
             dispose();
         });
-        cancelButton.addActionListener(ae -> dispose());
+        resetButton.addActionListener(ae -> resetFields());
     }
 
     public Pair<String, String> getNameAndPin() {
@@ -50,6 +50,6 @@ public class UpdateCustomerDialog extends JDialog {
         container.add(new JLabel("Ny PIN"));
         container.add(pinField);
         container.add(confirmButton);
-        container.add(cancelButton);
+        container.add(resetButton);
     }
 }
