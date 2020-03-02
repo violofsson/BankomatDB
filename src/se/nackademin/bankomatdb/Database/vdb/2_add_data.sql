@@ -1,3 +1,5 @@
+USE vo_bank;
+
 INSERT INTO customer_data (customer_id, personal_id, pin, name)
 VALUES (1, '16940915-6255', '6027', 'Dexter Scott'),
        (2, '16750622-8647', '7021', 'Hillary Camacho'),
