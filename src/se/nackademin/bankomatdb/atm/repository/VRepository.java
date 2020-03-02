@@ -17,8 +17,8 @@ public class VRepository implements ATMRepository {
 
     public VRepository() throws DatabaseConnectionException {
         try {
-            connectionProperties.load(new FileInputStream("src/se/nackademin/VConnection.properties"));
-            Class.forName("com.mysql.jdbc.Driver");
+            connectionProperties.load(new FileInputStream("src/se/nackademin/bankomatdb/VConnection.properties"));
+            //Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (Exception e) {
             throw new DatabaseConnectionException(e);
         }
@@ -92,7 +92,7 @@ public class VRepository implements ATMRepository {
             ps.setString(2, pin);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return new DTOCustomer(rs.getInt("id"), rs.getString("customer_name"), identification, pin);
+                return new DTOCustomer(rs.getInt("customer_id"), rs.getString("name"), identification, pin);
             } else {
                 throw new InvalidCredentialsException();
             }

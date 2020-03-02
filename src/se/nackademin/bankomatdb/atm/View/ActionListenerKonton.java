@@ -32,13 +32,17 @@ public class ActionListenerKonton implements ActionListener {
 
         if (e.getSource() == withdraw) {
             if (selectedAccount == null) return;
-            int amount = Integer.parseInt(JOptionPane.showInputDialog(null, "Hur mycket vill du ta ut?"));
+            String rawInput = JOptionPane.showInputDialog(null, "Hur mycket vill du ta ut?");
+            if (rawInput == null) return;
+            int amount = Integer.parseInt(rawInput);
             try {
                 if (controller.withdraw(selectedAccount, amount)) {
                     System.out.println("Uttag lyckades.");
                 } else {
                     System.out.println("Uttag misslyckades.");
                 }
+            } catch (NumberFormatException nfe) {
+                JOptionPane.showMessageDialog(null, "Felaktig inmatning, försök igen.");
             } catch (InsufficientFundsException | DatabaseConnectionException | NoSuchRecordException ex) {
                 ex.printStackTrace();
             }

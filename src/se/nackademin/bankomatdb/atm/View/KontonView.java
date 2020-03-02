@@ -2,13 +2,10 @@ package se.nackademin.bankomatdb.atm.View;
 
 import se.nackademin.bankomatdb.DatabaseConnectionException;
 import se.nackademin.bankomatdb.atm.controller.Controller;
-import se.nackademin.bankomatdb.atm.repository.ATMRepository;
 import se.nackademin.bankomatdb.model.DTOAccount;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class KontonView extends JFrame {
     private Container container = getContentPane();
@@ -18,9 +15,7 @@ public class KontonView extends JFrame {
     private JButton balance = new JButton("Se Saldo");
     private JButton accountHistory = new JButton("Kontohistorik");
     private ActionListenerKonton actionListener;
-    private List<DTOAccount> accountList = new ArrayList<>();
     private Controller controller;
-    private ATMRepository repository;
 
     KontonView(Controller c) {
         this.controller = c;
@@ -49,7 +44,6 @@ public class KontonView extends JFrame {
         withdraw.setBounds(40, 80, 100, 30);
         balance.setBounds(150, 80, 100, 30);
         accountHistory.setBounds(260, 80, 100, 30);
-
     }
 
     public void addComponentsToContainer() {

@@ -13,13 +13,11 @@ public class ActionListenerLogin extends JFrame implements ActionListener {
     private JPasswordField passwordField;
     private JButton loginButton;
     private JButton resetButton;
-    private KontonView kontonView;
     private LoginView loginView;
     private Controller controller;
 
     ActionListenerLogin(Controller c, JTextField idField, JPasswordField passwordField, JButton loginButton, JButton resetButton, LoginView loginView) {
         this.controller = c;
-        this.kontonView = new KontonView(c);
         this.idField = idField;
         this.passwordField = passwordField;
         this.loginButton = loginButton;
@@ -34,6 +32,7 @@ public class ActionListenerLogin extends JFrame implements ActionListener {
             try {
                 if (controller.login(idField.getText(), String.valueOf(passwordField.getPassword()))) {
                     loginView.setVisible(false);
+                    KontonView kontonView = new KontonView(controller);
                     kontonView.setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(null, "Fel inloggning");
