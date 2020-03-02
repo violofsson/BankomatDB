@@ -43,7 +43,7 @@ public class VRepository implements ATMRepository {
 
     @Override
     public List<DTOLoan> getCustomerLoans(int customerId) throws DatabaseConnectionException {
-        String loanQuery = "SELECT id, original_amount, granted, interest_rate FROM loan_data WHERE debtor_id = ?";
+        String loanQuery = "SELECT id, original_amount, granted, interest_rate, deadline FROM loan_data WHERE debtor_id = ?";
         List<DTOLoan> loans = new ArrayList<>();
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(loanQuery)) {
