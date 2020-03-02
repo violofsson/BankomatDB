@@ -1,6 +1,5 @@
 package se.nackademin.bankomatdb.atm.View;
 
-import se.nackademin.bankomatdb.DatabaseConnectionException;
 import se.nackademin.bankomatdb.atm.controller.Controller;
 import se.nackademin.bankomatdb.model.DTOAccount;
 
@@ -62,15 +61,6 @@ public class KontonView extends JFrame {
     }
 
     public void fillComboBox() {
-        try {
-            accounts.setEnabled(false);
-            accounts.removeAllItems();
-            for (DTOAccount account : controller.getCustomerAccounts()) {
-                accounts.addItem(account);
-            }
-            accounts.setEnabled(true);
-        } catch (DatabaseConnectionException e) {
-            e.printStackTrace();
-        }
+        actionListener.fillComboBox();
     }
 }

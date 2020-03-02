@@ -34,34 +34,54 @@ public class ActionListenerKonton implements ActionListener {
             if (selectedAccount == null) return;
             String rawInput = JOptionPane.showInputDialog(null, "Hur mycket vill du ta ut?");
             if (rawInput == null) return;
-            int amount = Integer.parseInt(rawInput);
             try {
+            int amount = Integer.parseInt(rawInput);
                 if (controller.withdraw(selectedAccount, amount)) {
-                    System.out.println("Uttag lyckades.");
+                    System.out.println("Uttag lyckades.\n");
                 } else {
-                    System.out.println("Uttag misslyckades.");
+                    System.out.println("Uttag misslyckades.\n");
                 }
             } catch (NumberFormatException nfe) {
                 JOptionPane.showMessageDialog(null, "Felaktig inmatning, försök igen.");
             } catch (InsufficientFundsException | DatabaseConnectionException | NoSuchRecordException ex) {
                 ex.printStackTrace();
+            } finally {
+                fillComboBox();
+                System.out.println();
             }
 
         } else if (e.getSource() == balance) {
             if (selectedAccount == null) return;
             try {
-                System.out.println("Saldo: " + selectedAccount.getBalance() +"\n" + "Lån: " + controller.getCustomerLoans());
+                System.out.println("Saldo: " + selectedAccount.getBalance() +"\n" + "Lån:");
+                controller.getCustomerLoans().forEach(System.out::println);
             } catch (DatabaseConnectionException ex) {
                 ex.printStackTrace();
+            } finally {
+                System.out.println();
             }
 
         } else if (e.getSource() == accountHistory) {
             try {
                 if (selectedAccount == null) return;
-                System.out.println("Kontohistorik: " + controller.getTransactionHistory(selectedAccount));
+                System.out.println("Kontohistorik:");
+                controller.getTransactionHistory(selectedAccount).forEach(System.out::println);
             } catch (DatabaseConnectionException | NoSuchRecordException ex) {
                 ex.printStackTrace();
+            } finally {
+                System.out.println();
             }
+        }
+    }
+
+    public void fillComboBox() {
+        try {
+            accountsComboBox.setEnabled(false);
+            accountsComboBox.removeAllItems();
+            controller.getCustomerAccounts().forEach(account -> accountsComboBox.addItem(account));
+            accountsComboBox.setEnabled(true);
+        } catch (DatabaseConnectionException e) {
+            e.printStackTrace();
         }
     }
 }
