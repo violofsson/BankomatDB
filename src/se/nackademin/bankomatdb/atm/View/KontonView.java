@@ -12,7 +12,7 @@ public class KontonView extends JFrame {
     private JLabel chooseAccountLabel = new JLabel("Välj konto");
     private JComboBox<DTOAccount> accounts = new JComboBox<>();
     private JButton withdraw = new JButton("Ta ut");
-    private JButton balance = new JButton("Se Saldo");
+    private JButton balance = new JButton("Se Saldo & lån");
     private JButton accountHistory = new JButton("Kontohistorik");
     private ActionListenerKonton actionListener;
     private Controller controller;

@@ -9,9 +9,9 @@ public class LoginView extends JFrame {
 
     private Container container = getContentPane();
     private JLabel bankomatLabel = new JLabel("Bankomat");
-    private JLabel idLabel = new JLabel("Skriv in id");
+    private JLabel idLabel = new JLabel("Personnummer");
     private JTextField idField = new JTextField();
-    private JLabel pinLabel = new JLabel("Skriv in pin");
+    private JLabel pinLabel = new JLabel("Pinkod");
     private JPasswordField passwordField = new JPasswordField();
     private JButton loginButton = new JButton("Login");
     private JButton resetButton = new JButton("Reset");
