@@ -1,5 +1,7 @@
 package se.nackademin.bankomatdb.atm.View;
 
+import se.nackademin.bankomatdb.atm.controller.Controller;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -13,9 +15,10 @@ public class LoginView extends JFrame {
     private JPasswordField passwordField = new JPasswordField();
     private JButton loginButton = new JButton("Login");
     private JButton resetButton = new JButton("Reset");
-    private ActionListenerLogin actionListener = new ActionListenerLogin(idField, passwordField, loginButton, resetButton, this);
+    private ActionListenerLogin actionListener;
 
-    LoginView() {
+    LoginView(Controller c) {
+        this.actionListener = new ActionListenerLogin(c, idField, passwordField, loginButton, resetButton, this);
         setLayout();
         setLocationAndSize();
         addComponentsToContainer();

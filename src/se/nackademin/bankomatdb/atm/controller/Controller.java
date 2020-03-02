@@ -1,6 +1,8 @@
 package se.nackademin.bankomatdb.atm.controller;
 
 import se.nackademin.bankomatdb.*;
+import se.nackademin.bankomatdb.atm.AlreadyLoggedInException;
+import se.nackademin.bankomatdb.atm.repository.VRepository;
 import se.nackademin.bankomatdb.model.DTOAccount;
 import se.nackademin.bankomatdb.model.DTOCustomer;
 import se.nackademin.bankomatdb.atm.repository.ATMRepository;
@@ -13,8 +15,8 @@ public class Controller {
     ATMRepository repository;
     DTOCustomer currentCustomer;
 
-    public Controller() {
-        // Intialisera repository
+    public Controller() throws DatabaseConnectionException {
+        repository = new VRepository();
     }
 
     // TODO Kasta lämplig exception om kunden inte är initialiserad
@@ -27,15 +29,15 @@ public class Controller {
         return currentCustomer.getCustomerId();
     }
 
-    public Collection<DTOAccount> getCustomerAccounts() throws DatabaseConnectionException, NoSuchCustomerException {
+    public Collection<DTOAccount> getCustomerAccounts() throws DatabaseConnectionException {
         return repository.getCustomerAccounts(getCurrentCustomer().getCustomerId());
     }
 
-    public Collection<DTOTransaction> getTransactionHistory(DTOAccount account) throws DatabaseConnectionException, NoSuchAccountException {
+    public Collection<DTOTransaction> getTransactionHistory(DTOAccount account) throws DatabaseConnectionException, NoSuchRecordException {
         return repository.getTransactionHistory(account.getAccountId());
     }
 
-    public Collection<DTOLoan> getCustomerLoans() throws DatabaseConnectionException, NoSuchCustomerException {
+    public Collection<DTOLoan> getCustomerLoans() throws DatabaseConnectionException {
         return repository.getCustomerLoans(getCurrentCustomer().getCustomerId());
     }
 
@@ -59,7 +61,7 @@ public class Controller {
     }
 
     // Returnerar true oom uttaget lyckades, precis som i Repository
-    public boolean withdraw(DTOAccount account, int amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchAccountException {
+    public boolean withdraw(DTOAccount account, int amount) throws InsufficientFundsException, DatabaseConnectionException, NoSuchRecordException {
         return repository.withdraw(account.getAccountId(), amount);
     }
 }

@@ -1,7 +1,7 @@
 package se.nackademin.bankomatdb.atm.View;
 
 import se.nackademin.bankomatdb.DatabaseConnectionException;
-import se.nackademin.bankomatdb.atm.controller.AlreadyLoggedInException;
+import se.nackademin.bankomatdb.atm.AlreadyLoggedInException;
 import se.nackademin.bankomatdb.atm.controller.Controller;
 
 import javax.swing.*;
@@ -9,16 +9,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class ActionListenerLogin extends JFrame implements ActionListener {
-
     private JTextField idField;
     private JPasswordField passwordField;
     private JButton loginButton;
     private JButton resetButton;
-    private KontonView kontonView = new KontonView();
+    private KontonView kontonView;
     private LoginView loginView;
-    private Controller controller = new Controller();
+    private Controller controller;
 
-    ActionListenerLogin(JTextField idField, JPasswordField passwordField, JButton loginButton, JButton resetButton, LoginView loginView) {
+    ActionListenerLogin(Controller c, JTextField idField, JPasswordField passwordField, JButton loginButton, JButton resetButton, LoginView loginView) {
+        this.controller = c;
+        this.kontonView = new KontonView(c);
         this.idField = idField;
         this.passwordField = passwordField;
         this.loginButton = loginButton;

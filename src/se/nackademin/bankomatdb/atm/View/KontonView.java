@@ -1,8 +1,6 @@
 package se.nackademin.bankomatdb.atm.View;
 
 import se.nackademin.bankomatdb.DatabaseConnectionException;
-import se.nackademin.bankomatdb.NoSuchCustomerException;
-import se.nackademin.bankomatdb.adminpanel.repository.Repository;
 import se.nackademin.bankomatdb.atm.controller.Controller;
 import se.nackademin.bankomatdb.atm.repository.ATMRepository;
 import se.nackademin.bankomatdb.model.DTOAccount;
@@ -10,23 +8,23 @@ import se.nackademin.bankomatdb.model.DTOAccount;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class KontonView extends JFrame {
-
     private Container container = getContentPane();
     private JLabel chooseAccountLabel = new JLabel("Välj konto");
     private JComboBox<DTOAccount> accounts = new JComboBox<>();
     private JButton withdraw = new JButton("Ta ut");
     private JButton balance = new JButton("Se Saldo");
     private JButton accountHistory = new JButton("Kontohistorik");
-    private ActionListenerKonton actionListener = new ActionListenerKonton(accounts, withdraw, balance, accountHistory);
+    private ActionListenerKonton actionListener;
     private List<DTOAccount> accountList = new ArrayList<>();
-    private Controller controller = new Controller();
+    private Controller controller;
     private ATMRepository repository;
 
-    KontonView() {
+    KontonView(Controller c) {
+        this.controller = c;
+        this.actionListener = new ActionListenerKonton(c, accounts, withdraw, balance, accountHistory);
         setLayout();
         setLocationAndSize();
         addComponentsToContainer();
@@ -71,13 +69,14 @@ public class KontonView extends JFrame {
 
     public void fillComboBox() {
         try {
-            accountList = repository.getCustomerAccounts(controller.getCurrentCustomerId());
-        } catch (DatabaseConnectionException | NoSuchCustomerException e) {
+            accounts.setEnabled(false);
+            accounts.removeAllItems();
+            for (DTOAccount account : controller.getCustomerAccounts()) {
+                accounts.addItem(account);
+            }
+            accounts.setEnabled(true);
+        } catch (DatabaseConnectionException e) {
             e.printStackTrace();
-        }
-
-        for (DTOAccount account : accountList) {
-            accounts.addItem(account);
         }
     }
 }
