@@ -49,7 +49,11 @@ public class ActionListenerKonton implements ActionListener {
 
         } else if (e.getSource() == balance) {
             if (selectedAccount == null) return;
-            JOptionPane.showMessageDialog(null, "Saldo: " + selectedAccount.getBalance());
+            try {
+                System.out.println("Saldo: " + selectedAccount.getBalance() +"\n" + "Lån: " + controller.getCustomerLoans());
+            } catch (DatabaseConnectionException ex) {
+                ex.printStackTrace();
+            }
 
         } else if (e.getSource() == accountHistory) {
             try {
