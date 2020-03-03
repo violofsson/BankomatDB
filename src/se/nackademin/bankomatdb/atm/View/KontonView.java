@@ -14,16 +14,14 @@ public class KontonView extends JFrame {
     private JButton balance = new JButton("Se Saldo & lån");
     private JButton accountHistory = new JButton("Kontohistorik");
     private ActionListenerKonton actionListener;
-    private Controller controller;
 
     KontonView(Controller c) {
-        this.controller = c;
         this.actionListener = new ActionListenerKonton(c, accounts, withdraw, balance, accountHistory);
         setLayout();
         setLocationAndSize();
         addComponentsToContainer();
         addActionEvent();
-        fillComboBox();
+        actionListener.fillComboBox();
         this.setTitle("Konton");
         this.setSize(400, 190);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -60,7 +58,4 @@ public class KontonView extends JFrame {
         accountHistory.addActionListener(actionListener);
     }
 
-    public void fillComboBox() {
-        actionListener.fillComboBox();
-    }
 }

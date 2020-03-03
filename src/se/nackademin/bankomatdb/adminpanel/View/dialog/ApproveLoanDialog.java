@@ -10,7 +10,6 @@ import java.time.format.DateTimeParseException;
 import java.util.IllegalFormatException;
 
 public class ApproveLoanDialog extends JDialog {
-    int debtorId;
     Triplet<Double, Double, LocalDate> input;
     JTextField loanedAmountField = new JTextField();
     JTextField interestRateField = new JTextField();
@@ -18,9 +17,8 @@ public class ApproveLoanDialog extends JDialog {
     JButton confirmButton = new JButton("Bevilja");
     JButton cancelButton = new JButton("Avbryt");
 
-    public ApproveLoanDialog(JFrame parent, int debtorId) {
+    public ApproveLoanDialog(JFrame parent) {
         super(parent, "Bevilja lån", true);
-        this.debtorId = debtorId;
         setLayout(this.getContentPane());
         this.setActionListeners();
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
